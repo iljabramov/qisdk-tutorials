@@ -17,10 +17,11 @@ import com.aldebaran.qi.sdk.builder.AnimationBuilder
 import com.aldebaran.qi.sdk.builder.SayBuilder
 import com.aldebaran.qi.sdk.`object`.actuation.Animate
 import com.softbankrobotics.qisdktutorials.R
+import com.softbankrobotics.qisdktutorials.databinding.ConversationLayoutBinding
 import com.softbankrobotics.qisdktutorials.ui.conversation.ConversationBinder
 import com.softbankrobotics.qisdktutorials.ui.conversation.ConversationItemType
 import com.softbankrobotics.qisdktutorials.ui.tutorials.TutorialActivity
-import kotlinx.android.synthetic.main.conversation_layout.*
+import com.softbankrobotics.qisdktutorials.utils.Constants
 
 private const val TAG = "AnimateTutorialActivity"
 
@@ -28,6 +29,8 @@ private const val TAG = "AnimateTutorialActivity"
  * The activity for the Animate tutorial (animation).
  */
 class AnimateTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks {
+
+    private lateinit var binding: ConversationLayoutBinding
 
     private var conversationBinder: ConversationBinder? = null
     private var mediaPlayer: MediaPlayer? = null
@@ -37,6 +40,9 @@ class AnimateTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        binding = ConversationLayoutBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         // Register the RobotLifecycleCallbacks to this Activity.
         QiSDK.register(this, this)
@@ -64,24 +70,25 @@ class AnimateTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks {
     override fun onRobotFocusGained(qiContext: QiContext) {
         // Bind the conversational events to the view.
         val conversationStatus = qiContext.conversation.status(qiContext.robotContext)
-        conversationBinder = conversation_view.bindConversationTo(conversationStatus)
+        conversationBinder = binding.conversationView.bindConversationTo(conversationStatus)
 
         val say = SayBuilder.with(qiContext)
-                .withText("I can perform animations: here is an elephant.")
-                .build()
+            .withText("I can perform animations: here is an elephant.")
+            .withLocale(Constants.Locals.ENGLISH_LOCALE)
+            .build()
 
         say.run()
 
         // Create an animation.
         val animation = AnimationBuilder.with(qiContext) // Create the builder with the context.
-                .withResources(R.raw.elephant_a001) // Set the animation resource.
-                .build() // Build the animation.
+            .withResources(R.raw.elephant_a001) // Set the animation resource.
+            .build() // Build the animation.
 
         // Create an animate action.
         val animate = AnimateBuilder.with(qiContext) // Create the builder with the context.
-                .withAnimation(animation) // Set the animation.
-                .build() // Build the animate action.
-                .also { this.animate = it }
+            .withAnimation(animation) // Set the animation.
+            .build() // Build the animate action.
+            .also { this.animate = it }
 
         // Add an on started listener to the animate action.
         animate.addOnStartedListener {
@@ -122,7 +129,7 @@ class AnimateTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks {
     }
 
     private fun displayLine(text: String, type: ConversationItemType) {
-        runOnUiThread { conversation_view.addLine(text, type) }
+        runOnUiThread { binding.conversationView.addLine(text, type) }
     }
 
 }

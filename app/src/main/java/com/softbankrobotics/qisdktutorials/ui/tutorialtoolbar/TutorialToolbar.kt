@@ -6,38 +6,40 @@
 package com.softbankrobotics.qisdktutorials.ui.tutorialtoolbar
 
 import android.content.Context
-import androidx.annotation.StringRes
-import androidx.core.content.ContextCompat
-import androidx.appcompat.widget.Toolbar
 import android.util.AttributeSet
-import android.view.View
-
+import android.view.LayoutInflater
+import androidx.annotation.StringRes
+import androidx.appcompat.widget.Toolbar
+import androidx.core.content.ContextCompat
 import com.softbankrobotics.qisdktutorials.R
+import com.softbankrobotics.qisdktutorials.databinding.TutorialToolbarBinding
 import com.softbankrobotics.qisdktutorials.model.data.TutorialLevel
-import kotlinx.android.synthetic.main.tutorial_toolbar.view.*
 
 class TutorialToolbar (context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : Toolbar(context, attrs, defStyleAttr) {
 
+    lateinit var binding: TutorialToolbarBinding
+
     init {
-        View.inflate(context, R.layout.tutorial_toolbar, this)
+//        View.inflate(context, R.layout.tutorial_toolbar, this)
+        binding = TutorialToolbarBinding.inflate(LayoutInflater.from(context), this, true)
     }
 
-    constructor(context: Context): this(context, null)
+    constructor(context: Context) : this(context, null)
 
-    constructor(context: Context, attrs: AttributeSet?): this(context, attrs,0)
+    constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
 
     override fun setNavigationOnClickListener(listener: OnClickListener) {
-        back_arrow.setOnClickListener(listener)
+        binding.backArrow.setOnClickListener(listener)
     }
 
     fun setName(name: String) {
-        title_textview.text = name
+        binding.titleTextview.text = name
         invalidate()
         requestLayout()
     }
 
     fun setName(@StringRes resId: Int) {
-        title_textview.text = resources.getString((resId))
+        binding.titleTextview.text = resources.getString((resId))
         invalidate()
         requestLayout()
     }
@@ -45,12 +47,22 @@ class TutorialToolbar (context: Context, attrs: AttributeSet? = null, defStyleAt
     fun setLevel(level: TutorialLevel) {
         when (level) {
             TutorialLevel.BASIC -> {
-                level_textview.setText(R.string.toolbar_basic_level)
-                background_view.setBackgroundColor(ContextCompat.getColor(context, R.color.basic_green))
+                binding.levelTextview.setText(R.string.toolbar_basic_level)
+                binding.backgroundView.setBackgroundColor(
+                    ContextCompat.getColor(
+                        context,
+                        R.color.basic_green
+                    )
+                )
             }
             TutorialLevel.ADVANCED -> {
-                level_textview.setText(R.string.toolbar_advanced_level)
-                background_view.setBackgroundColor(ContextCompat.getColor(context, R.color.advanced_orange))
+                binding.levelTextview.setText(R.string.toolbar_advanced_level)
+                binding.backgroundView.setBackgroundColor(
+                    ContextCompat.getColor(
+                        context,
+                        R.color.advanced_orange
+                    )
+                )
             }
         }
 

@@ -11,7 +11,6 @@ import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-
 import com.aldebaran.qi.sdk.QiContext
 import com.aldebaran.qi.sdk.QiSDK
 import com.aldebaran.qi.sdk.RobotLifecycleCallbacks
@@ -23,13 +22,12 @@ import com.aldebaran.qi.sdk.`object`.actuation.FreeFrame
 import com.aldebaran.qi.sdk.`object`.actuation.GoTo
 import com.aldebaran.qi.sdk.`object`.actuation.Mapping
 import com.softbankrobotics.qisdktutorials.R
+import com.softbankrobotics.qisdktutorials.databinding.ActivityGoToWorldTutorialBinding
 import com.softbankrobotics.qisdktutorials.ui.conversation.ConversationBinder
 import com.softbankrobotics.qisdktutorials.ui.conversation.ConversationItemType
 import com.softbankrobotics.qisdktutorials.ui.tutorials.TutorialActivity
+import com.softbankrobotics.qisdktutorials.utils.Constants
 import com.softbankrobotics.qisdktutorials.utils.KeyboardUtils
-import kotlinx.android.synthetic.main.activity_go_to_world_tutorial.*
-
-import java.util.ArrayList
 
 private const val TAG = "GoToWorldActivity"
 
@@ -38,26 +36,36 @@ private const val TAG = "GoToWorldActivity"
  */
 class GoToWorldTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks {
 
+    private lateinit var binding: ActivityGoToWorldTutorialBinding
+
     private var conversationBinder: ConversationBinder? = null
     private lateinit var spinnerAdapter: ArrayAdapter<String>
 
     // Store the selected location.
     private var selectedLocation: String? = null
+
     // Store the saved locations.
     private val savedLocations = hashMapOf<String, FreeFrame>()
+
     // The QiContext provided by the QiSDK.
     private var qiContext: QiContext? = null
+
     // Store the Actuation service.
     private var actuation: Actuation? = null
+
     // Store the Mapping service.
     private var mapping: Mapping? = null
+
     // Store the GoTo action.
     private var goTo: GoTo? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        add_item_edit.setOnEditorActionListener { _, actionId, _ ->
+        binding = ActivityGoToWorldTutorialBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        binding.addItemEdit.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 handleSaveClick()
             }
@@ -65,20 +73,25 @@ class GoToWorldTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks {
         }
 
         // Save location on save button clicked.
-        save_button.setOnClickListener { handleSaveClick() }
+        binding.saveButton.setOnClickListener { handleSaveClick() }
 
         // Go to location on go to button clicked.
-        goto_button.setOnClickListener {
+        binding.gotoButton.setOnClickListener {
             selectedLocation?.let {
-                goto_button.isEnabled = false
-                save_button.isEnabled = false
+                binding.gotoButton.isEnabled = false
+                binding.saveButton.isEnabled = false
                 goToLocation(it)
             }
         }
 
         // Store location on selection.
-        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
+        binding.spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(
+                parent: AdapterView<*>,
+                view: View,
+                position: Int,
+                id: Long
+            ) {
                 selectedLocation = parent.getItemAtPosition(position) as String
                 Log.i(TAG, "onItemSelected: $selectedLocation")
             }
@@ -92,7 +105,7 @@ class GoToWorldTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks {
         // Setup spinner adapter.
         spinnerAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, ArrayList())
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        spinner.adapter = spinnerAdapter
+        binding.spinner.adapter = spinnerAdapter
 
         // Register the RobotLifecycleCallbacks to this Activity.
         QiSDK.register(this, this)
@@ -113,14 +126,15 @@ class GoToWorldTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks {
 
         // Bind the conversational events to the view.
         val conversationStatus = qiContext.conversation.status(qiContext.robotContext)
-        conversationBinder = conversation_view.bindConversationTo(conversationStatus)
+        conversationBinder = binding.conversationView.bindConversationTo(conversationStatus)
 
         actuation = qiContext.actuation
         mapping = qiContext.mapping
 
         val say = SayBuilder.with(qiContext)
-                .withText("I can store locations and go to them.")
-                .build()
+            .withText("I can store locations and go to them.")
+            .withLocale(Constants.Locals.ENGLISH_LOCALE)
+            .build()
 
         say.run()
 
@@ -143,8 +157,8 @@ class GoToWorldTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks {
     }
 
     private fun handleSaveClick() {
-        val location = add_item_edit.text.toString()
-        add_item_edit.text.clear()
+        val location = binding.addItemEdit.text.toString()
+        binding.addItemEdit.text.clear()
         KeyboardUtils.hideKeyboard(this)
         // Save location only if new.
         if (location.isNotEmpty() && !savedLocations.containsKey(location)) {
@@ -159,8 +173,8 @@ class GoToWorldTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks {
         Log.i(TAG, message)
         displayLine(message, ConversationItemType.INFO_LOG)
         runOnUiThread {
-            save_button.isEnabled = true
-            goto_button.isEnabled = true
+            binding.saveButton.isEnabled = true
+            binding.gotoButton.isEnabled = true
         }
     }
 
@@ -188,9 +202,9 @@ class GoToWorldTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks {
         frameFuture?.andThenCompose { frame ->
             // Create a GoTo action.
             val goTo = GoToBuilder.with(qiContext)
-                    .withFrame(frame)
-                    .build()
-                    .also { this.goTo = it }
+                .withFrame(frame)
+                .build()
+                .also { this.goTo = it }
 
             // Display text when the GoTo action starts.
             goTo.addOnStartedListener {
@@ -214,6 +228,6 @@ class GoToWorldTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks {
     }
 
     private fun displayLine(text: String, type: ConversationItemType) {
-        runOnUiThread { conversation_view.addLine(text, type) }
+        runOnUiThread { binding.conversationView.addLine(text, type) }
     }
 }

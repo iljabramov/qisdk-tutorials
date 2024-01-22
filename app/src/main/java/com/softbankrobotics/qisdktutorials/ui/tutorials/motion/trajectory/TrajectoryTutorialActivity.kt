@@ -16,10 +16,11 @@ import com.aldebaran.qi.sdk.builder.AnimationBuilder
 import com.aldebaran.qi.sdk.builder.SayBuilder
 import com.aldebaran.qi.sdk.`object`.actuation.Animate
 import com.softbankrobotics.qisdktutorials.R
+import com.softbankrobotics.qisdktutorials.databinding.ActivityAutonomousAbilitiesTutorialBinding
 import com.softbankrobotics.qisdktutorials.ui.conversation.ConversationBinder
 import com.softbankrobotics.qisdktutorials.ui.conversation.ConversationItemType
 import com.softbankrobotics.qisdktutorials.ui.tutorials.TutorialActivity
-import kotlinx.android.synthetic.main.activity_autonomous_abilities_tutorial.*
+import com.softbankrobotics.qisdktutorials.utils.Constants
 
 private const val TAG = "TrajectoryActivity"
 
@@ -28,6 +29,8 @@ private const val TAG = "TrajectoryActivity"
  */
 class TrajectoryTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks {
 
+    private lateinit var binding: ActivityAutonomousAbilitiesTutorialBinding
+
     private var conversationBinder: ConversationBinder? = null
 
     // Store the Animate action.
@@ -35,6 +38,9 @@ class TrajectoryTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        binding = ActivityAutonomousAbilitiesTutorialBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         // Register the RobotLifecycleCallbacks to this Activity.
         QiSDK.register(this, this)
@@ -51,23 +57,24 @@ class TrajectoryTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks {
     override fun onRobotFocusGained(qiContext: QiContext) {
         // Bind the conversational events to the view.
         val conversationStatus = qiContext.conversation.status(qiContext.robotContext)
-        conversationBinder = conversation_view.bindConversationTo(conversationStatus)
+        conversationBinder = binding.conversationView.bindConversationTo(conversationStatus)
 
         val say = SayBuilder.with(qiContext)
-                .withText("I can perform trajectories: I will move forward.")
-                .build()
+            .withText("I can perform trajectories: I will move forward.")
+            .withLocale(Constants.Locals.ENGLISH_LOCALE)
+            .build()
 
         say.run()
 
         // Create an animation.
         val animation = AnimationBuilder.with(qiContext) // Create the builder with the context.
-                .withResources(R.raw.dance) // Set the animation resource.
-                .build() // Build the animation.
+            .withResources(R.raw.dance) // Set the animation resource.
+            .build() // Build the animation.
 
         // Create an animate action.
         val animate = AnimateBuilder.with(qiContext) // Create the builder with the context.
-                .withAnimation(animation) // Set the animation.
-                .build() // Build the animate action.
+            .withAnimation(animation) // Set the animation.
+            .build() // Build the animate action.
 
         // Add an on started listener to the animate action.
         animate.addOnStartedListener {
@@ -107,6 +114,6 @@ class TrajectoryTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks {
     }
 
     private fun displayLine(text: String, type: ConversationItemType) {
-        runOnUiThread { conversation_view.addLine(text, type) }
+        runOnUiThread { binding.conversationView.addLine(text, type) }
     }
 }

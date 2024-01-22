@@ -5,11 +5,10 @@
 
 package com.softbankrobotics.qisdktutorials.ui.categories
 
-import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
-
-import com.softbankrobotics.qisdktutorials.R
+import androidx.recyclerview.widget.RecyclerView
+import com.softbankrobotics.qisdktutorials.databinding.TutorialLayoutBinding
 import com.softbankrobotics.qisdktutorials.model.data.Tutorial
 
 /**
@@ -20,8 +19,10 @@ internal class TutorialAdapter(private val onTutorialClickedListener: OnTutorial
     private var tutorials = listOf<Tutorial>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TutorialViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.tutorial_layout, parent, false)
-        return TutorialViewHolder(view, onTutorialClickedListener)
+        val itemBinding =
+            TutorialLayoutBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+//        val view = LayoutInflater.from(parent.context).inflate(R.layout.tutorial_layout, parent, false)
+        return TutorialViewHolder(itemBinding, onTutorialClickedListener)
     }
 
     override fun onBindViewHolder(holder: TutorialViewHolder, position: Int) {

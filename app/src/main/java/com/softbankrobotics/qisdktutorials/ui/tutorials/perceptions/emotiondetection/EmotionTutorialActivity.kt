@@ -13,14 +13,17 @@ import com.aldebaran.qi.sdk.QiSDK
 import com.aldebaran.qi.sdk.RobotLifecycleCallbacks
 import com.aldebaran.qi.sdk.builder.SayBuilder
 import com.softbankrobotics.qisdktutorials.R
+import com.softbankrobotics.qisdktutorials.databinding.ActivityEmotionTutorialBinding
 import com.softbankrobotics.qisdktutorials.ui.conversation.ConversationBinder
 import com.softbankrobotics.qisdktutorials.ui.tutorials.TutorialActivity
-import kotlinx.android.synthetic.main.activity_emotion_tutorial.*
+import com.softbankrobotics.qisdktutorials.utils.Constants
 
 /**
  * The activity for the Emotion tutorial.
  */
 class EmotionTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks, OnBasicEmotionChangedListener {
+
+    private lateinit var binding: ActivityEmotionTutorialBinding
 
     // Store the basic emotion observer.
     private var basicEmotionObserver: BasicEmotionObserver? = null
@@ -29,6 +32,9 @@ class EmotionTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks, OnB
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        binding = ActivityEmotionTutorialBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         // Create the basic emotion observer and listen to it.
         basicEmotionObserver = BasicEmotionObserver()
@@ -53,11 +59,12 @@ class EmotionTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks, OnB
     override fun onRobotFocusGained(qiContext: QiContext) {
         // Bind the conversational events to the view.
         val conversationStatus = qiContext.conversation.status(qiContext.robotContext)
-        conversationBinder = conversation_view.bindConversationTo(conversationStatus)
+        conversationBinder = binding.conversationView.bindConversationTo(conversationStatus)
 
         val say = SayBuilder.with(qiContext)
-                .withText("I can display the basic emotions of the human I'm seeing. Try to express an emotion with your smile, your voice or by touching my sensors.")
-                .build()
+            .withText("I can display the basic emotions of the human I'm seeing. Try to express an emotion with your smile, your voice or by touching my sensors.")
+            .withLocale(Constants.Locals.ENGLISH_LOCALE)
+            .build()
 
         say.run()
 
@@ -78,7 +85,7 @@ class EmotionTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks, OnB
 
     override fun onBasicEmotionChanged(basicEmotion: BasicEmotion) {
         // Update basic emotion image.
-        runOnUiThread { emotion_image_view.setImageResource(emotionImageRes(basicEmotion)) }
+        runOnUiThread { binding.emotionImageView.setImageResource(emotionImageRes(basicEmotion)) }
     }
 
     @DrawableRes

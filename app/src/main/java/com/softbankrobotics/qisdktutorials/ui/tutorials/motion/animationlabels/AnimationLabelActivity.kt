@@ -20,6 +20,7 @@ import com.softbankrobotics.qisdktutorials.ui.conversation.ConversationBinder
 import com.softbankrobotics.qisdktutorials.ui.conversation.ConversationItemType
 import com.softbankrobotics.qisdktutorials.ui.conversation.ConversationView
 import com.softbankrobotics.qisdktutorials.ui.tutorials.TutorialActivity
+import com.softbankrobotics.qisdktutorials.utils.Constants
 
 private const val TAG = "AnimationLabelActivity"
 
@@ -54,26 +55,28 @@ class AnimationLabelActivity : TutorialActivity(), RobotLifecycleCallbacks {
         conversationBinder = conversationView.bindConversationTo(conversationStatus)
 
         val say = SayBuilder.with(qiContext)
-                .withText("I can trigger events using animation labels: I will synchronize my speech with my dance.")
-                .build()
+            .withText("I can trigger events using animation labels: I will synchronize my speech with my dance.")
+            .withLocale(Constants.Locals.ENGLISH_LOCALE)
+            .build()
 
         say.run()
 
         // Create an animation.
         val animation = AnimationBuilder.with(qiContext) // Create the builder with the context.
-                .withResources(R.raw.dance_b001) // Set the animation resource.
-                .build() // Build the animation.
+            .withResources(R.raw.dance_b001) // Set the animation resource.
+            .build() // Build the animation.
 
         // Create an animate action.
         val animate = AnimateBuilder.with(qiContext) // Create the builder with the context.
-                .withAnimation(animation) // Set the animation.
-                .build() // Build the animate action.
+            .withAnimation(animation) // Set the animation.
+            .build() // Build the animate action.
 
         // Say and display the name of the reached labels
         animate.addOnLabelReachedListener { label, _ ->
             val sayLabel = SayBuilder.with(qiContext)
-                    .withText(label)
-                    .build()
+                .withText(label)
+                .withLocale(Constants.Locals.ENGLISH_LOCALE)
+                .build()
 
             sayLabel.async().run()
         }

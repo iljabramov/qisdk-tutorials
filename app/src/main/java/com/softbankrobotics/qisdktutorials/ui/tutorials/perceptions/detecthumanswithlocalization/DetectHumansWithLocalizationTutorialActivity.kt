@@ -2,7 +2,6 @@ package com.softbankrobotics.qisdktutorials.ui.tutorials.perceptions.detecthuman
 
 import android.os.Bundle
 import android.util.Log
-
 import com.aldebaran.qi.Future
 import com.aldebaran.qi.sdk.QiContext
 import com.aldebaran.qi.sdk.QiSDK
@@ -11,14 +10,15 @@ import com.aldebaran.qi.sdk.builder.LocalizeAndMapBuilder
 import com.aldebaran.qi.sdk.builder.LocalizeBuilder
 import com.aldebaran.qi.sdk.builder.SayBuilder
 import com.aldebaran.qi.sdk.`object`.actuation.ExplorationMap
-import com.aldebaran.qi.sdk.`object`.actuation.LocalizationStatus.*
+import com.aldebaran.qi.sdk.`object`.actuation.LocalizationStatus.LOCALIZED
 import com.aldebaran.qi.sdk.`object`.actuation.Localize
 import com.aldebaran.qi.sdk.`object`.actuation.LocalizeAndMap
 import com.softbankrobotics.qisdktutorials.R
+import com.softbankrobotics.qisdktutorials.databinding.ActivityAutonomousAbilitiesTutorialBinding
 import com.softbankrobotics.qisdktutorials.ui.conversation.ConversationBinder
 import com.softbankrobotics.qisdktutorials.ui.conversation.ConversationItemType
 import com.softbankrobotics.qisdktutorials.ui.tutorials.TutorialActivity
-import kotlinx.android.synthetic.main.activity_autonomous_abilities_tutorial.*
+import com.softbankrobotics.qisdktutorials.utils.Constants
 
 private const val TAG = "DetectHumansWithLoc"
 
@@ -27,19 +27,27 @@ private const val TAG = "DetectHumansWithLoc"
  */
 class DetectHumansWithLocalizationTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks {
 
+    private lateinit var binding: ActivityAutonomousAbilitiesTutorialBinding
+
     private lateinit var conversationBinder: ConversationBinder
 
     // Store the LocalizeAndMap action.
     private lateinit var localizeAndMap: LocalizeAndMap
+
     // Store the map.
     private var explorationMap: ExplorationMap? = null
+
     // Store the LocalizeAndMap execution.
     private lateinit var localizationAndMapping: Future<Void>
+
     // Store the Localize action.
     private lateinit var localize: Localize
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        binding = ActivityAutonomousAbilitiesTutorialBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         // Register the RobotLifecycleCallbacks to this Activity.
         QiSDK.register(this, this)
@@ -56,9 +64,12 @@ class DetectHumansWithLocalizationTutorialActivity : TutorialActivity(), RobotLi
     override fun onRobotFocusGained(qiContext: QiContext) {
         // Bind the conversational events to the view.
         val conversationStatus = qiContext.conversation.status(qiContext.robotContext)
-        conversationBinder = conversation_view.bindConversationTo(conversationStatus)
+        conversationBinder = binding.conversationView.bindConversationTo(conversationStatus)
 
-        say(qiContext, "I will map my environment. Please be sure that my hatch is closed and that you are at least 3 meters away from me while I'm scanning the place.")
+        say(
+            qiContext,
+            "I will map my environment. Please be sure that my hatch is closed and that you are at least 3 meters away from me while I'm scanning the place."
+        )
         say(qiContext, "Ready? 5, 4, 3, 2, 1.")
 
         startMapping(qiContext)
@@ -84,19 +95,22 @@ class DetectHumansWithLocalizationTutorialActivity : TutorialActivity(), RobotLi
 
         // Add an on status changed listener on the LocalizeAndMap action for the robot to say when he is localized.
         localizeAndMap.addOnStatusChangedListener {
-             if (it == LOCALIZED) {
-                        // Dump the ExplorationMap.
-                        explorationMap = localizeAndMap.dumpMap()
+            if (it == LOCALIZED) {
+                // Dump the ExplorationMap.
+                explorationMap = localizeAndMap.dumpMap()
 
-                        val message = "Robot has mapped his environment."
-                        Log.i(TAG, message)
-                        displayLine(message, ConversationItemType.INFO_LOG)
+                val message = "Robot has mapped his environment."
+                Log.i(TAG, message)
+                displayLine(message, ConversationItemType.INFO_LOG)
 
-                        say(qiContext, "I now have a map of my environment. I will use this map to localize myself.")
+                say(
+                    qiContext,
+                    "I now have a map of my environment. I will use this map to localize myself."
+                )
 
-                        // Cancel the LocalizeAndMap action.
-                        localizationAndMapping.requestCancellation()
-             }
+                // Cancel the LocalizeAndMap action.
+                localizationAndMapping.requestCancellation()
+            }
         }
 
         val message = "Mapping..."
@@ -121,17 +135,20 @@ class DetectHumansWithLocalizationTutorialActivity : TutorialActivity(), RobotLi
     private fun startLocalizing(qiContext: QiContext) {
         // Create a Localize action.
         localize = LocalizeBuilder.with(qiContext)
-                .withMap(explorationMap)
-                .build()
+            .withMap(explorationMap)
+            .build()
 
         // Add an on status changed listener on the Localize action for the robot to say when he is localized.
         localize.addOnStatusChangedListener {
             if (it == LOCALIZED) {
-                    val message = "Robot is localized."
-                    Log.i(TAG, message)
-                    displayLine(message, ConversationItemType.INFO_LOG)
+                val message = "Robot is localized."
+                Log.i(TAG, message)
+                displayLine(message, ConversationItemType.INFO_LOG)
 
-                    say(qiContext, "I'm now localized and I have a 360° awareness thanks to my base sensors. Try to come from behind and I will detect you.")
+                say(
+                    qiContext,
+                    "I'm now localized and I have a 360° awareness thanks to my base sensors. Try to come from behind and I will detect you."
+                )
             }
         }
 
@@ -154,12 +171,13 @@ class DetectHumansWithLocalizationTutorialActivity : TutorialActivity(), RobotLi
 
     private fun say(qiContext: QiContext, text: String) {
         SayBuilder.with(qiContext)
-                .withText(text)
-                .build()
-                .run()
+            .withText(text)
+            .withLocale(Constants.Locals.ENGLISH_LOCALE)
+            .build()
+            .run()
     }
 
     private fun displayLine(text: String, type: ConversationItemType) {
-        runOnUiThread { conversation_view.addLine(text, type) }
+        runOnUiThread { binding.conversationView.addLine(text, type) }
     }
 }

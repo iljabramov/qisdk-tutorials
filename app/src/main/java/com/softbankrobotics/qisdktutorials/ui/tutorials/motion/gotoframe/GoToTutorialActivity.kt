@@ -16,10 +16,11 @@ import com.aldebaran.qi.sdk.builder.SayBuilder
 import com.aldebaran.qi.sdk.builder.TransformBuilder
 import com.aldebaran.qi.sdk.`object`.actuation.GoTo
 import com.softbankrobotics.qisdktutorials.R
+import com.softbankrobotics.qisdktutorials.databinding.ActivityAutonomousAbilitiesTutorialBinding
 import com.softbankrobotics.qisdktutorials.ui.conversation.ConversationBinder
 import com.softbankrobotics.qisdktutorials.ui.conversation.ConversationItemType
 import com.softbankrobotics.qisdktutorials.ui.tutorials.TutorialActivity
-import kotlinx.android.synthetic.main.activity_autonomous_abilities_tutorial.*
+import com.softbankrobotics.qisdktutorials.utils.Constants
 
 private const val TAG = "GoToTutorialActivity"
 
@@ -28,6 +29,8 @@ private const val TAG = "GoToTutorialActivity"
  */
 class GoToTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks {
 
+    private lateinit var binding: ActivityAutonomousAbilitiesTutorialBinding
+
     private var conversationBinder: ConversationBinder? = null
 
     // Store the GoTo action.
@@ -35,6 +38,9 @@ class GoToTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        binding = ActivityAutonomousAbilitiesTutorialBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         // Register the RobotLifecycleCallbacks to this Activity.
         QiSDK.register(this, this)
@@ -51,11 +57,12 @@ class GoToTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks {
     override fun onRobotFocusGained(qiContext: QiContext) {
         // Bind the conversational events to the view.
         val conversationStatus = qiContext.conversation.status(qiContext.robotContext)
-        conversationBinder = conversation_view.bindConversationTo(conversationStatus)
+        conversationBinder = binding.conversationView.bindConversationTo(conversationStatus)
 
         val say = SayBuilder.with(qiContext)
-                .withText("I can move around: I will go 1 meter forward.")
-                .build()
+            .withText("I can move around: I will go 1 meter forward.")
+            .withLocale(Constants.Locals.ENGLISH_LOCALE)
+            .build()
 
         say.run()
 
@@ -67,7 +74,7 @@ class GoToTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks {
 
         // Create a transform corresponding to a 1 meter forward translation.
         val transform = TransformBuilder.create()
-                .fromXTranslation(1.0)
+            .fromXTranslation(1.0)
 
         // Get the Mapping service from the QiContext.
         val mapping = qiContext.mapping
@@ -80,8 +87,8 @@ class GoToTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks {
 
         // Create a GoTo action.
         val goTo = GoToBuilder.with(qiContext) // Create the builder with the QiContext.
-                .withFrame(targetFrame.frame()) // Set the target frame.
-                .build() // Build the GoTo action.
+            .withFrame(targetFrame.frame()) // Set the target frame.
+            .build() // Build the GoTo action.
 
         // Add an on started listener on the GoTo action.
         goTo.addOnStartedListener {
@@ -120,6 +127,6 @@ class GoToTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks {
     }
 
     private fun displayLine(text: String, type: ConversationItemType) {
-        runOnUiThread { conversation_view?.addLine(text, type) }
+        runOnUiThread { binding.conversationView.addLine(text, type) }
     }
 }

@@ -6,11 +6,10 @@
 package com.softbankrobotics.qisdktutorials.ui.tutorials.conversation.dynamicconcepts
 
 import android.os.Bundle
-import androidx.recyclerview.widget.LinearLayoutManager
 import android.view.inputmethod.EditorInfo
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.aldebaran.qi.Consumer
 import com.aldebaran.qi.sdk.Qi
-
 import com.aldebaran.qi.sdk.QiContext
 import com.aldebaran.qi.sdk.QiSDK
 import com.aldebaran.qi.sdk.RobotLifecycleCallbacks
@@ -21,15 +20,18 @@ import com.aldebaran.qi.sdk.builder.TopicBuilder
 import com.aldebaran.qi.sdk.`object`.conversation.EditablePhraseSet
 import com.aldebaran.qi.sdk.`object`.conversation.Phrase
 import com.softbankrobotics.qisdktutorials.R
+import com.softbankrobotics.qisdktutorials.databinding.ActivityDynamicConceptsTutorialBinding
 import com.softbankrobotics.qisdktutorials.ui.conversation.ConversationBinder
 import com.softbankrobotics.qisdktutorials.ui.tutorials.TutorialActivity
+import com.softbankrobotics.qisdktutorials.utils.Constants
 import com.softbankrobotics.qisdktutorials.utils.KeyboardUtils
-import kotlinx.android.synthetic.main.activity_dynamic_concepts_tutorial.*
 
 /**
  * The activity for the Dynamic concepts tutorial.
  */
 class DynamicConceptsTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks {
+
+    private lateinit var binding: ActivityDynamicConceptsTutorialBinding
 
     private lateinit var greetingAdapter: GreetingAdapter
     private lateinit var conversationBinder: ConversationBinder
@@ -40,7 +42,10 @@ class DynamicConceptsTutorialActivity : TutorialActivity(), RobotLifecycleCallba
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        add_item_edit.setOnEditorActionListener { _, actionId, _ ->
+        binding = ActivityDynamicConceptsTutorialBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        binding.addItemEdit.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 handleAddClick()
             }
@@ -58,11 +63,11 @@ class DynamicConceptsTutorialActivity : TutorialActivity(), RobotLifecycleCallba
         greetingAdapter = GreetingAdapter(greetingRemovedListener)
 
         // Setup recycler view.
-        recycler_view.layoutManager = LinearLayoutManager(this)
-        recycler_view.adapter = greetingAdapter
+        binding.recyclerView.layoutManager = LinearLayoutManager(this)
+        binding.recyclerView.adapter = greetingAdapter
 
         // Add greeting on add button clicked.
-        add_button.setOnClickListener { handleAddClick() }
+        binding.addButton.setOnClickListener { handleAddClick() }
 
         // Register the RobotLifecycleCallbacks to this Activity.
         QiSDK.register(this, this)
@@ -79,11 +84,12 @@ class DynamicConceptsTutorialActivity : TutorialActivity(), RobotLifecycleCallba
     override fun onRobotFocusGained(qiContext: QiContext) {
         // Bind the conversational events to the view.
         val conversationStatus = qiContext.conversation.status(qiContext.robotContext)
-        conversationBinder = conversation_view.bindConversationTo(conversationStatus)
+        conversationBinder = binding.conversationView.bindConversationTo(conversationStatus)
 
         val say = SayBuilder.with(qiContext)
-                .withText("Add more greetings to my dynamic concept and say \"Hello\".")
-                .build()
+            .withText("Add more greetings to my dynamic concept and say \"Hello\".")
+            .withLocale(Constants.Locals.ENGLISH_LOCALE)
+            .build()
 
         say.run()
 
@@ -122,8 +128,8 @@ class DynamicConceptsTutorialActivity : TutorialActivity(), RobotLifecycleCallba
     }
 
     private fun handleAddClick() {
-        val greeting = add_item_edit.text.toString()
-        add_item_edit.text.clear()
+        val greeting = binding.addItemEdit.text.toString()
+        binding.addItemEdit.text.clear()
         KeyboardUtils.hideKeyboard(this)
         // Add greeting only if new.
         if (greeting.isNotEmpty() && !greetingAdapter.containsGreeting(greeting)) {

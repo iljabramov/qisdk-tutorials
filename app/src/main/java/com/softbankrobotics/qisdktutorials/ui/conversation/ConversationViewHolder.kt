@@ -6,20 +6,19 @@
 package com.softbankrobotics.qisdktutorials.ui.conversation
 
 import androidx.recyclerview.widget.RecyclerView
-import android.view.View
-
-import kotlinx.android.synthetic.main.layout_info_log_view.view.*
+import com.softbankrobotics.qisdktutorials.databinding.LayoutInfoLogViewBinding
 
 /**
  * View holder for the conversation view.
  */
-internal class ConversationViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+internal class ConversationViewHolder(private val itemBinding: LayoutInfoLogViewBinding) :
+    RecyclerView.ViewHolder(itemBinding.root) {
 
     /**
      * Bind the text to the view.
      * @param text the text
      */
     fun bind(text: String) {
-        itemView.textview.text = text
+        itemBinding.textview.text = text
     }
 }

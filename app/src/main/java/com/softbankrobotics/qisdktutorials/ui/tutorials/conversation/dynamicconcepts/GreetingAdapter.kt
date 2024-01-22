@@ -5,13 +5,10 @@
 
 package com.softbankrobotics.qisdktutorials.ui.tutorials.conversation.dynamicconcepts
 
-import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
-
-import com.softbankrobotics.qisdktutorials.R
-
-import java.util.ArrayList
+import androidx.recyclerview.widget.RecyclerView
+import com.softbankrobotics.qisdktutorials.databinding.GreetingLayoutBinding
 
 /**
  * The adapter used to show greetings.
@@ -21,8 +18,10 @@ internal class GreetingAdapter(private val onGreetingRemovedListener: OnGreeting
     private val greetings: MutableList<String> = ArrayList()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GreetingViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.greeting_layout, parent,false)
-        return GreetingViewHolder(view, onGreetingRemovedListener)
+//        val view = LayoutInflater.from(parent.context).inflate(R.layout.greeting_layout, parent,false)
+        val itemBinding =
+            GreetingLayoutBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return GreetingViewHolder(itemBinding, onGreetingRemovedListener)
     }
 
     override fun onBindViewHolder(holder: GreetingViewHolder, position: Int) {

@@ -23,10 +23,11 @@ import com.aldebaran.qi.sdk.`object`.locale.Language
 import com.aldebaran.qi.sdk.`object`.locale.Locale
 import com.aldebaran.qi.sdk.`object`.locale.Region
 import com.softbankrobotics.qisdktutorials.R
+import com.softbankrobotics.qisdktutorials.databinding.ActivityChatLocaleTutorialBinding
 import com.softbankrobotics.qisdktutorials.ui.conversation.ConversationBinder
 import com.softbankrobotics.qisdktutorials.ui.conversation.ConversationItemType
 import com.softbankrobotics.qisdktutorials.ui.tutorials.TutorialActivity
-import kotlinx.android.synthetic.main.activity_chat_locale_tutorial.*
+import com.softbankrobotics.qisdktutorials.utils.Constants
 
 private const val TAG = "ChatLocaleActivity"
 
@@ -35,19 +36,25 @@ private const val TAG = "ChatLocaleActivity"
  */
 class ChatLocaleTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks {
 
+    private lateinit var binding: ActivityChatLocaleTutorialBinding
+
     private var conversationBinder: ConversationBinder? = null
 
     // Store the Chat actions.
     private var chatEN: Chat? = null
     private var chatJA: Chat? = null
+
     // Store the action execution future.
     private var currentChatFuture: Future<Void>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        binding = ActivityChatLocaleTutorialBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
         // Change the locale to English when checked.
-        en_button.setOnCheckedChangeListener { _, isChecked ->
+        binding.enButton.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
                 disableButtons()
                 chatEN?.let { switchToChat(it) }
@@ -55,7 +62,7 @@ class ChatLocaleTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks {
         }
 
         // Change the locale to Japanese when checked.
-        ja_button.setOnCheckedChangeListener { _, isChecked ->
+        binding.jaButton.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
                 disableButtons()
                 chatJA?.let { switchToChat(it) }
@@ -71,8 +78,8 @@ class ChatLocaleTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks {
 
         // Disable and uncheck buttons.
         disableButtons()
-        en_button.isChecked = false
-        ja_button.isChecked = false
+        binding.enButton.isChecked = false
+        binding.jaButton.isChecked = false
     }
 
     override fun onDestroy() {
@@ -86,11 +93,12 @@ class ChatLocaleTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks {
     override fun onRobotFocusGained(qiContext: QiContext) {
         // Bind the conversational events to the view.
         val conversationStatus = qiContext.conversation.status(qiContext.robotContext)
-        conversationBinder = conversation_view?.bindConversationTo(conversationStatus)
+        conversationBinder = binding.conversationView.bindConversationTo(conversationStatus)
 
         val say = SayBuilder.with(qiContext)
-                .withText("Select the locale of the discussion and talk to me.")
-                .build()
+            .withText("Select the locale of the discussion and talk to me.")
+            .withLocale(Constants.Locals.ENGLISH_LOCALE)
+            .build()
 
         say.run()
 
@@ -127,22 +135,22 @@ class ChatLocaleTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks {
     private fun buildChat(qiContext: QiContext, topicAssetName: String, locale: Locale): Chat {
         // Create a topic from the asset file.
         val topic = TopicBuilder.with(qiContext)
-                .withAsset(topicAssetName)
-                .build()
+            .withAsset(topicAssetName)
+            .build()
 
         val startBookmark = topic.bookmarks["start"]
 
         // Create a new QiChatbot with the specified Locale.
         val qiChatbot = QiChatbotBuilder.with(qiContext)
-                .withTopic(topic)
-                .withLocale(locale)
-                .build()
+            .withTopic(topic)
+            .withLocale(locale)
+            .build()
 
         // Create a new Chat action with the specified Locale.
         val chat = ChatBuilder.with(qiContext)
-                .withChatbot(qiChatbot)
-                .withLocale(locale)
-                .build()
+            .withChatbot(qiChatbot)
+            .withLocale(locale)
+            .build()
 
         // Enable buttons when the Chat starts.
         chat.addOnStartedListener {
@@ -150,7 +158,11 @@ class ChatLocaleTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks {
             val message = "Discussion is now in " + locale.language + "."
             Log.i(TAG, message)
             displayLine(message, ConversationItemType.INFO_LOG)
-            qiChatbot.async().goToBookmark(startBookmark, AutonomousReactionImportance.HIGH, AutonomousReactionValidity.IMMEDIATE)
+            qiChatbot.async().goToBookmark(
+                startBookmark,
+                AutonomousReactionImportance.HIGH,
+                AutonomousReactionValidity.IMMEDIATE
+            )
         }
 
         return chat
@@ -177,20 +189,20 @@ class ChatLocaleTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks {
 
     private fun disableButtons() {
         runOnUiThread {
-            en_button.isEnabled = false
-            ja_button.isEnabled = false
+            binding.enButton.isEnabled = false
+            binding.jaButton.isEnabled = false
         }
     }
 
     private fun enableButtons() {
         runOnUiThread {
-            en_button.isEnabled = true
-            ja_button.isEnabled = true
+            binding.enButton.isEnabled = true
+            binding.jaButton.isEnabled = true
         }
     }
 
     private fun displayLine(text: String, type: ConversationItemType) {
-        runOnUiThread { conversation_view?.addLine(text, type) }
+        runOnUiThread { binding.conversationView.addLine(text, type) }
     }
 
 }

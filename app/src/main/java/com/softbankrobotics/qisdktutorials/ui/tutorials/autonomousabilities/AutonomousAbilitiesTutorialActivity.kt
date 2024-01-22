@@ -17,29 +17,38 @@ import com.aldebaran.qi.sdk.builder.SayBuilder
 import com.aldebaran.qi.sdk.`object`.holder.AutonomousAbilitiesType
 import com.aldebaran.qi.sdk.`object`.holder.Holder
 import com.softbankrobotics.qisdktutorials.R
+import com.softbankrobotics.qisdktutorials.databinding.ActivityAutonomousAbilitiesTutorialBinding
 import com.softbankrobotics.qisdktutorials.ui.conversation.ConversationBinder
 import com.softbankrobotics.qisdktutorials.ui.conversation.ConversationItemType
 import com.softbankrobotics.qisdktutorials.ui.tutorials.TutorialActivity
-import kotlinx.android.synthetic.main.activity_autonomous_abilities_tutorial.*
+import com.softbankrobotics.qisdktutorials.utils.Constants
 
 /**
  * The activity for the autonomous abilities tutorial.
  */
 class AutonomousAbilitiesTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks {
 
+    private lateinit var binding: ActivityAutonomousAbilitiesTutorialBinding
+
     private var conversationBinder: ConversationBinder? = null
+
     // A boolean used to store the abilities status.
     private var abilitiesHeld = false
+
     // The holder for the abilities.
     private var holder: Holder? = null
+
     // The QiContext provided by the QiSDK.
     private var qiContext: QiContext? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        binding = ActivityAutonomousAbilitiesTutorialBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
         // Set the button onClick listener.
-        button_switch_autonomous.setOnClickListener {
+        binding.buttonSwitchAutonomous.setOnClickListener {
             // Check that the Activity owns the focus.
             if (qiContext != null) {
                 toggleAbilities()
@@ -64,17 +73,18 @@ class AutonomousAbilitiesTutorialActivity : TutorialActivity(), RobotLifecycleCa
 
         // Bind the conversational events to the view.
         val conversationStatus = qiContext.conversation.status(qiContext.robotContext)
-        conversationBinder = conversation_view.bindConversationTo(conversationStatus)
+        conversationBinder = binding.conversationView.bindConversationTo(conversationStatus)
 
         val say = SayBuilder.with(qiContext)
-                .withText("My autonomous abilities can be disabled: click on the button to hold/release them.")
-                .build()
+            .withText("My autonomous abilities can be disabled: click on the button to hold/release them.")
+            .withLocale(Constants.Locals.ENGLISH_LOCALE)
+            .build()
 
         say.run()
     }
 
     override fun onRobotFocusLost() {
-         conversationBinder?.unbind()
+        conversationBinder?.unbind()
 
         // Remove the QiContext.
         this.qiContext = null
@@ -86,7 +96,7 @@ class AutonomousAbilitiesTutorialActivity : TutorialActivity(), RobotLifecycleCa
 
     private fun toggleAbilities() {
         // Disable the button.
-        button_switch_autonomous.isEnabled = false
+        binding.buttonSwitchAutonomous.isEnabled = false
 
         if (abilitiesHeld) {
             holder?.let { releaseAbilities(it) }
@@ -98,13 +108,13 @@ class AutonomousAbilitiesTutorialActivity : TutorialActivity(), RobotLifecycleCa
     private fun holdAbilities(qiContext: QiContext?) {
         // Build and store the holder for the abilities.
         val holder = HolderBuilder.with(qiContext)
-                .withAutonomousAbilities(
-                        AutonomousAbilitiesType.BACKGROUND_MOVEMENT,
-                        AutonomousAbilitiesType.BASIC_AWARENESS,
-                        AutonomousAbilitiesType.AUTONOMOUS_BLINKING
-                )
-                .build()
-                .also { this.holder = it }
+            .withAutonomousAbilities(
+                AutonomousAbilitiesType.BACKGROUND_MOVEMENT,
+                AutonomousAbilitiesType.BASIC_AWARENESS,
+                AutonomousAbilitiesType.AUTONOMOUS_BLINKING
+            )
+            .build()
+            .also { this.holder = it }
 
         // Hold the abilities asynchronously.
         val holdFuture = holder.async().hold()
@@ -115,10 +125,10 @@ class AutonomousAbilitiesTutorialActivity : TutorialActivity(), RobotLifecycleCa
             // Store the abilities status.
             abilitiesHeld = true
             // Change the button text.
-            button_switch_autonomous.setText(R.string.release)
+            binding.buttonSwitchAutonomous.setText(R.string.release)
             // Enable the button.
-            button_switch_autonomous.isEnabled = true
-        } ))
+            binding.buttonSwitchAutonomous.isEnabled = true
+        }))
     }
 
     private fun releaseAbilities(holder: Holder) {
@@ -131,13 +141,13 @@ class AutonomousAbilitiesTutorialActivity : TutorialActivity(), RobotLifecycleCa
             // Store the abilities status.
             abilitiesHeld = false
             // Change the button text.
-            button_switch_autonomous.text = getString(R.string.hold)
+            binding.buttonSwitchAutonomous.text = getString(R.string.hold)
             // Enable the button.
-            button_switch_autonomous.isEnabled = true
+            binding.buttonSwitchAutonomous.isEnabled = true
         }))
     }
 
     private fun displayLine(text: String, type: ConversationItemType) {
-        runOnUiThread { conversation_view.addLine(text, type) }
+        runOnUiThread { binding.conversationView.addLine(text, type) }
     }
 }

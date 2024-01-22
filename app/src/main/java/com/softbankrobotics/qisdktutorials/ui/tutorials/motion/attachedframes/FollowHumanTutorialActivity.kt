@@ -20,10 +20,11 @@ import com.aldebaran.qi.sdk.`object`.actuation.GoTo
 import com.aldebaran.qi.sdk.`object`.human.Human
 import com.aldebaran.qi.sdk.util.FutureUtils
 import com.softbankrobotics.qisdktutorials.R
+import com.softbankrobotics.qisdktutorials.databinding.ActivityFollowHumanTutorialBinding
 import com.softbankrobotics.qisdktutorials.ui.conversation.ConversationBinder
 import com.softbankrobotics.qisdktutorials.ui.conversation.ConversationItemType
 import com.softbankrobotics.qisdktutorials.ui.tutorials.TutorialActivity
-import kotlinx.android.synthetic.main.activity_follow_human_tutorial.*
+import com.softbankrobotics.qisdktutorials.utils.Constants
 
 import java.util.concurrent.TimeUnit
 import kotlin.math.sqrt
@@ -32,23 +33,29 @@ private const val TAG = "FollowHumanActivity"
 
 class FollowHumanTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks {
 
+    private lateinit var binding: ActivityFollowHumanTutorialBinding
+
     private var conversationBinder: ConversationBinder? = null
 
     // The QiContext provided by the QiSDK.
     private var qiContext: QiContext? = null
+
     // Store the action execution future.
     private var goToFuture: Future<Void>? = null
+
     // Store the GoTo action.
     private var goTo: GoTo? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        binding = ActivityFollowHumanTutorialBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         // Search humans on follow button clicked.
-        follow_button.setOnClickListener {
+        binding.followButton.setOnClickListener {
             if (qiContext != null) {
-                follow_button.isEnabled = false
+                binding.followButton.isEnabled = false
                 displayLine("Following in 3 seconds...", ConversationItemType.INFO_LOG)
                 // Wait 3 seconds before following.
                 FutureUtils.wait(3, TimeUnit.SECONDS).andThenConsume { searchHumans() }
@@ -56,8 +63,8 @@ class FollowHumanTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks 
         }
 
         // Stop moving on stop button clicked.
-        stop_button.setOnClickListener {
-            stop_button.isEnabled = false
+        binding.stopButton.setOnClickListener {
+            binding.stopButton.isEnabled = false
             val message = "Stopping..."
             Log.i(TAG, message)
             displayLine(message, ConversationItemType.INFO_LOG)
@@ -82,11 +89,12 @@ class FollowHumanTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks 
 
         // Bind the conversational events to the view.
         val conversationStatus = qiContext.conversation.status(qiContext.robotContext)
-        conversationBinder = conversation_view.bindConversationTo(conversationStatus)
+        conversationBinder = binding.conversationView.bindConversationTo(conversationStatus)
 
         val say = SayBuilder.with(qiContext)
-                .withText("Press \"Follow\" and I will follow you. Press \"Stop\" to stop me.")
-                .build()
+            .withText("Press \"Follow\" and I will follow you. Press \"Stop\" to stop me.")
+            .withLocale(Constants.Locals.ENGLISH_LOCALE)
+            .build()
 
         say.run()
 
@@ -113,8 +121,8 @@ class FollowHumanTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks 
         Log.i(TAG, message)
         displayLine(message, ConversationItemType.INFO_LOG)
         runOnUiThread {
-            stop_button.isEnabled = false
-            follow_button.isEnabled = true
+            binding.stopButton.isEnabled = false
+            binding.followButton.isEnabled = true
         }
     }
 
@@ -123,14 +131,14 @@ class FollowHumanTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks 
         Log.i(TAG, message)
         displayLine(message, ConversationItemType.INFO_LOG)
         runOnUiThread {
-            follow_button.isEnabled = false
-            stop_button.isEnabled = true
+            binding.followButton.isEnabled = false
+            binding.stopButton.isEnabled = true
         }
     }
 
     private fun searchHumans() {
         val qiContext = qiContext
-        if(qiContext != null) {
+        if (qiContext != null) {
             val humanAwareness = qiContext.humanAwareness
             val humansAroundFuture = humanAwareness.async().humansAround
             humansAroundFuture.andThenConsume {
@@ -153,9 +161,9 @@ class FollowHumanTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks 
 
         // Create a GoTo action.
         val goTo = GoToBuilder.with(qiContext)
-                .withFrame(targetFrame)
-                .build()
-                .also { this.goTo = it }
+            .withFrame(targetFrame)
+            .build()
+            .also { this.goTo = it }
 
         // Update UI when the GoTo action starts.
         goTo.addOnStartedListener {
@@ -174,10 +182,12 @@ class FollowHumanTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks 
                     Log.i(TAG, "Target reached.")
                     enterWaitingForOrderState()
                 }
+
                 it.isCancelled -> {
                     Log.i(TAG, "Movement stopped.")
                     enterWaitingForOrderState()
                 }
+
                 else -> {
                     Log.e(TAG, "Movement error.", it.error)
                     enterWaitingForOrderState()
@@ -226,7 +236,7 @@ class FollowHumanTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks 
     }
 
     private fun displayLine(text: String, type: ConversationItemType) {
-        runOnUiThread { conversation_view.addLine(text, type) }
+        runOnUiThread { binding.conversationView.addLine(text, type) }
     }
 
 }

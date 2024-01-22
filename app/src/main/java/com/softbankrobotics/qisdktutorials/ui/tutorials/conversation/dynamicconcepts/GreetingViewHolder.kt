@@ -6,20 +6,26 @@
 package com.softbankrobotics.qisdktutorials.ui.tutorials.conversation.dynamicconcepts
 
 import androidx.recyclerview.widget.RecyclerView
-import android.view.View
-import kotlinx.android.synthetic.main.greeting_layout.view.*
+import com.softbankrobotics.qisdktutorials.databinding.GreetingLayoutBinding
 
 /**
  * The view holder to show a greeting.
  */
-internal class GreetingViewHolder(itemView: View, private val onGreetingRemovedListener: OnGreetingRemovedListener?) : RecyclerView.ViewHolder(itemView) {
+internal class GreetingViewHolder(
+    private val itemBinding: GreetingLayoutBinding,
+    private val onGreetingRemovedListener: OnGreetingRemovedListener?
+) : RecyclerView.ViewHolder(itemBinding.root) {
 
     /**
      * Binds a tutorial to the views.
      * @param greeting the greeting
      */
     fun bind(greeting: String) {
-        itemView.greeting_textview.text = greeting
-        itemView.delete_button.setOnClickListener { onGreetingRemovedListener?.onGreetingRemoved(greeting) }
+        itemBinding.greetingTextview.text = greeting
+        itemBinding.deleteButton.setOnClickListener {
+            onGreetingRemovedListener?.onGreetingRemoved(
+                greeting
+            )
+        }
     }
 }

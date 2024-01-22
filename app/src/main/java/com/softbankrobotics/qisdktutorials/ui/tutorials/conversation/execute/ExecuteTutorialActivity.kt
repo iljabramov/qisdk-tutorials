@@ -22,10 +22,10 @@ import com.aldebaran.qi.sdk.`object`.conversation.BaseQiChatExecutor
 import com.aldebaran.qi.sdk.`object`.conversation.Chat
 import com.aldebaran.qi.sdk.`object`.conversation.QiChatExecutor
 import com.softbankrobotics.qisdktutorials.R
+import com.softbankrobotics.qisdktutorials.databinding.ConversationLayoutBinding
 import com.softbankrobotics.qisdktutorials.ui.conversation.ConversationBinder
 import com.softbankrobotics.qisdktutorials.ui.conversation.ConversationItemType
 import com.softbankrobotics.qisdktutorials.ui.tutorials.TutorialActivity
-import kotlinx.android.synthetic.main.activity_autonomous_abilities_tutorial.*
 
 private const val TAG = "ExecuteTutorialActivity"
 
@@ -33,11 +33,17 @@ private const val TAG = "ExecuteTutorialActivity"
  * The activity for the Execute tutorial.
  */
 class ExecuteTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks {
+
+    private lateinit var binding: ConversationLayoutBinding
+
     private lateinit var conversationBinder: ConversationBinder
     private lateinit var chat: Chat
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        binding = ConversationLayoutBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         // Register the RobotLifecycleCallbacks to this Activity.
         QiSDK.register(this, this)
@@ -52,7 +58,7 @@ class ExecuteTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks {
     override fun onRobotFocusGained(qiContext: QiContext) {
         // Bind the conversational events to the view.
         val conversationStatus = qiContext.conversation.status(qiContext.robotContext)
-        conversationBinder = conversation_view.bindConversationTo(conversationStatus)
+        conversationBinder = binding.conversationView.bindConversationTo(conversationStatus)
 
         // Create a topic.
         val topic = TopicBuilder.with(qiContext)
@@ -97,7 +103,7 @@ class ExecuteTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks {
     override val layoutId = R.layout.conversation_layout
 
     private fun displayLine(text: String, type: ConversationItemType) {
-        runOnUiThread { conversation_view.addLine(text, type) }
+        runOnUiThread { binding.conversationView.addLine(text, type) }
     }
 
     internal inner class MyQiChatExecutor(qiContext: QiContext) : BaseQiChatExecutor(qiContext) {

@@ -21,29 +21,37 @@ import com.aldebaran.qi.sdk.`object`.conversation.Bookmark
 import com.aldebaran.qi.sdk.`object`.conversation.QiChatVariable
 import com.aldebaran.qi.sdk.`object`.conversation.QiChatbot
 import com.softbankrobotics.qisdktutorials.R
+import com.softbankrobotics.qisdktutorials.databinding.ActivityQiChatVariablesTutorialBinding
 import com.softbankrobotics.qisdktutorials.ui.conversation.ConversationBinder
 import com.softbankrobotics.qisdktutorials.ui.tutorials.TutorialActivity
+import com.softbankrobotics.qisdktutorials.utils.Constants
 import com.softbankrobotics.qisdktutorials.utils.KeyboardUtils
-import kotlinx.android.synthetic.main.activity_qi_chat_variables_tutorial.*
 
 /**
  * The activity for the QiChatVariables tutorial.
  */
 class QiChatVariablesTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks {
 
+    private lateinit var binding: ActivityQiChatVariablesTutorialBinding
+
     private lateinit var conversationBinder: ConversationBinder
 
     // Store the qiVariable.
     private var qiVariable: QiChatVariable? = null
+
     // Store the QiChatbot.
     private var qiChatbot: QiChatbot? = null
+
     // Store the Bookmark used to read the qiVariable.
     private var readBookmark: Bookmark? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        variable_edit_text.setOnEditorActionListener { _, actionId, _ ->
+        binding = ActivityQiChatVariablesTutorialBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        binding.variableEditText.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 retrieveAndAssignVariable()
             }
@@ -51,7 +59,7 @@ class QiChatVariablesTutorialActivity : TutorialActivity(), RobotLifecycleCallba
         }
 
         // Assign qiVariable on assign button clicked.
-        assign_button.setOnClickListener { retrieveAndAssignVariable() }
+        binding.assignButton.setOnClickListener { retrieveAndAssignVariable() }
 
         // Register the RobotLifecycleCallbacks to this Activity.
         QiSDK.register(this, this)
@@ -68,11 +76,12 @@ class QiChatVariablesTutorialActivity : TutorialActivity(), RobotLifecycleCallba
     override fun onRobotFocusGained(qiContext: QiContext) {
         // Bind the conversational events to the view.
         val conversationStatus = qiContext.conversation.status(qiContext.robotContext)
-        conversationBinder = conversation_view.bindConversationTo(conversationStatus)
+        conversationBinder = binding.conversationView.bindConversationTo(conversationStatus)
 
         val say = SayBuilder.with(qiContext)
-                .withText("Assign a value to the qiVariable.")
-                .build()
+            .withText("Assign a value to the qiVariable.")
+            .withLocale(Constants.Locals.ENGLISH_LOCALE)
+            .build()
 
         say.run()
 
@@ -110,8 +119,8 @@ class QiChatVariablesTutorialActivity : TutorialActivity(), RobotLifecycleCallba
     }
 
     private fun retrieveAndAssignVariable() {
-        val value = variable_edit_text.text.toString()
-        variable_edit_text.text.clear()
+        val value = binding.variableEditText.text.toString()
+        binding.variableEditText.text.clear()
         KeyboardUtils.hideKeyboard(this@QiChatVariablesTutorialActivity)
         assignVariable(value)
     }

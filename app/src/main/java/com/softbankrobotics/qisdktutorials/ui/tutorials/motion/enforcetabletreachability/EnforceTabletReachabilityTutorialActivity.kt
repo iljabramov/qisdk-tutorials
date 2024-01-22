@@ -11,15 +11,16 @@ import com.aldebaran.qi.Future
 import com.aldebaran.qi.sdk.QiContext
 import com.aldebaran.qi.sdk.QiSDK
 import com.aldebaran.qi.sdk.RobotLifecycleCallbacks
-import com.aldebaran.qi.sdk.`object`.actuation.EnforceTabletReachability
-import com.aldebaran.qi.sdk.`object`.conversation.Say
 import com.aldebaran.qi.sdk.builder.EnforceTabletReachabilityBuilder
 import com.aldebaran.qi.sdk.builder.SayBuilder
+import com.aldebaran.qi.sdk.`object`.actuation.EnforceTabletReachability
+import com.aldebaran.qi.sdk.`object`.conversation.Say
 import com.softbankrobotics.qisdktutorials.R
+import com.softbankrobotics.qisdktutorials.databinding.ActivityEnforceTabletReachabilityTutorialBinding
 import com.softbankrobotics.qisdktutorials.ui.conversation.ConversationBinder
 import com.softbankrobotics.qisdktutorials.ui.conversation.ConversationItemType
 import com.softbankrobotics.qisdktutorials.ui.tutorials.TutorialActivity
-import kotlinx.android.synthetic.main.activity_enforce_tablet_reachability_tutorial.*
+import com.softbankrobotics.qisdktutorials.utils.Constants
 
 private const val TAG = "TabletReachActivity"
 
@@ -27,6 +28,9 @@ private const val TAG = "TabletReachActivity"
  * The activity for the EnforceTabletReachability tutorial.
  */
 class EnforceTabletReachabilityTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks {
+
+    private lateinit var binding: ActivityEnforceTabletReachabilityTutorialBinding
+
     private var conversationBinder: ConversationBinder? = null
 
     // Store qiContext
@@ -47,7 +51,10 @@ class EnforceTabletReachabilityTutorialActivity : TutorialActivity(), RobotLifec
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        tablet_reachability_button.setOnClickListener {
+        binding = ActivityEnforceTabletReachabilityTutorialBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        binding.tabletReachabilityButton.setOnClickListener {
             val enforceTabletReachabilityFuture = this.enforceTabletReachabilityFuture
             if (enforceTabletReachability == null) {
                 val errorLog = "EnforceTabletReachability has not been built yet"
@@ -96,7 +103,7 @@ class EnforceTabletReachabilityTutorialActivity : TutorialActivity(), RobotLifec
     }
 
     private fun setButtonText(str: String) {
-        runOnUiThread { tablet_reachability_button.text = str }
+        runOnUiThread { binding.tabletReachabilityButton.text = str }
     }
 
     override fun onDestroy() {
@@ -113,26 +120,29 @@ class EnforceTabletReachabilityTutorialActivity : TutorialActivity(), RobotLifec
 
         // Bind the conversational events to the view.
         val conversationStatus = qiContext.conversation.status(qiContext.robotContext)
-        conversationBinder = conversation_view.bindConversationTo(conversationStatus)
+        conversationBinder = binding.conversationView.bindConversationTo(conversationStatus)
 
         // Build the introduction say.
         val introductionSay = SayBuilder.with(qiContext)
-                .withText("I can enforce my tablet reachability by limiting my movements. Try it out!")
-                .build()
+            .withText("I can enforce my tablet reachability by limiting my movements. Try it out!")
+            .withLocale(Constants.Locals.ENGLISH_LOCALE)
+            .build()
 
         // Build a say action to give feedback when the position is reached.
         positionReachedSay = SayBuilder.with(qiContext)
-                .withText("My movements are now limited. Cancel the action to see the difference.")
-                .build()
+            .withText("My movements are now limited. Cancel the action to see the difference.")
+            .withLocale(Constants.Locals.ENGLISH_LOCALE)
+            .build()
 
         // Build a say action to give feedback when the action ends.
         actionEndedSay = SayBuilder.with(qiContext)
-                .withText("My movements are back to normal. Run the action again to see the difference.")
-                .build()
+            .withText("My movements are back to normal. Run the action again to see the difference.")
+            .withLocale(Constants.Locals.ENGLISH_LOCALE)
+            .build()
 
         // Build EnforceTabletReachability action.
         enforceTabletReachability = EnforceTabletReachabilityBuilder.with(qiContext)
-                .build()
+            .build()
 
         // On started listener
         enforceTabletReachability?.addOnStartedListener {
@@ -163,7 +173,7 @@ class EnforceTabletReachabilityTutorialActivity : TutorialActivity(), RobotLifec
     }
 
     private fun enableButton() {
-        runOnUiThread { tablet_reachability_button.isEnabled = true }
+        runOnUiThread { binding.tabletReachabilityButton.isEnabled = true }
     }
 
     override fun onRobotFocusLost() {
@@ -181,7 +191,7 @@ class EnforceTabletReachabilityTutorialActivity : TutorialActivity(), RobotLifec
     }
 
     private fun displayLine(text: String, type: ConversationItemType) {
-        runOnUiThread { conversation_view.addLine(text, type) }
+        runOnUiThread { binding.conversationView.addLine(text, type) }
     }
 
 }

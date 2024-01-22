@@ -11,16 +11,18 @@ import androidx.recyclerview.widget.LinearLayoutManager
 
 import com.aldebaran.qi.sdk.design.activity.RobotActivity
 import com.softbankrobotics.qisdktutorials.R
+import com.softbankrobotics.qisdktutorials.databinding.ActivityCategoriesBinding
 import com.softbankrobotics.qisdktutorials.model.data.Tutorial
 import com.softbankrobotics.qisdktutorials.model.data.TutorialCategory
 import com.softbankrobotics.qisdktutorials.model.data.TutorialLevel
 import com.softbankrobotics.qisdktutorials.ui.bilateralswitch.OnCheckedChangeListener
-import kotlinx.android.synthetic.main.activity_categories.*
 
 /**
  * The activity showing the tutorial categories.
  */
 class CategoriesActivity : RobotActivity(), CategoriesContract.View, OnTutorialClickedListener {
+
+    private lateinit var binding: ActivityCategoriesBinding
 
     private lateinit var presenter: CategoriesContract.Presenter
     private lateinit var robot: CategoriesContract.Robot
@@ -30,7 +32,9 @@ class CategoriesActivity : RobotActivity(), CategoriesContract.View, OnTutorialC
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_categories)
+
+        binding = ActivityCategoriesBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         setupButtons()
         setupRecyclerView()
@@ -77,9 +81,9 @@ class CategoriesActivity : RobotActivity(), CategoriesContract.View, OnTutorialC
     override fun selectCategory(category: TutorialCategory) {
         runOnUiThread {
             when (category) {
-                TutorialCategory.TALK -> talk_button.isChecked = true
-                TutorialCategory.MOVE -> move_button.isChecked = true
-                TutorialCategory.SMART -> smart_button.isChecked = true
+                TutorialCategory.TALK -> binding.talkButton.isChecked = true
+                TutorialCategory.MOVE -> binding.moveButton.isChecked = true
+                TutorialCategory.SMART -> binding.smartButton.isChecked = true
             }
         }
     }
@@ -87,8 +91,8 @@ class CategoriesActivity : RobotActivity(), CategoriesContract.View, OnTutorialC
     override fun selectLevel(level: TutorialLevel) {
         runOnUiThread {
             when (level) {
-                TutorialLevel.BASIC -> level_switch.setChecked(false)
-                TutorialLevel.ADVANCED -> level_switch.setChecked(true)
+                TutorialLevel.BASIC -> binding.levelSwitch.setChecked(false)
+                TutorialLevel.ADVANCED -> binding.levelSwitch.setChecked(true)
             }
         }
     }
@@ -103,22 +107,22 @@ class CategoriesActivity : RobotActivity(), CategoriesContract.View, OnTutorialC
      * Configure the buttons.
      */
     private fun setupButtons() {
-        talk_button.setOnClickListener {
+        binding.talkButton.setOnClickListener {
             presenter.loadTutorials(TutorialCategory.TALK)
             robot.selectTopic(TutorialCategory.TALK)
         }
 
-        move_button.setOnClickListener {
+        binding.moveButton.setOnClickListener {
             presenter.loadTutorials(TutorialCategory.MOVE)
             robot.selectTopic(TutorialCategory.MOVE)
         }
 
-        smart_button.setOnClickListener {
+        binding.smartButton.setOnClickListener {
             presenter.loadTutorials(TutorialCategory.SMART)
             robot.selectTopic(TutorialCategory.SMART)
         }
 
-        close_button.setOnClickListener { finishAffinity() }
+        binding.closeButton.setOnClickListener { finishAffinity() }
     }
 
     /**
@@ -126,14 +130,14 @@ class CategoriesActivity : RobotActivity(), CategoriesContract.View, OnTutorialC
      */
     private fun setupRecyclerView() {
         tutorialAdapter = TutorialAdapter(this)
-        recycler_view.layoutManager = LinearLayoutManager(this)
-        recycler_view.adapter = tutorialAdapter
+        binding.recyclerView.layoutManager = LinearLayoutManager(this)
+        binding.recyclerView.adapter = tutorialAdapter
 
         val drawable = getDrawable(R.drawable.empty_divider_tutorials)
         if (drawable != null) {
             val dividerItemDecoration = DividerItemDecoration(this, DividerItemDecoration.VERTICAL)
             dividerItemDecoration.setDrawable(drawable)
-            recycler_view.addItemDecoration(dividerItemDecoration)
+            binding.recyclerView.addItemDecoration(dividerItemDecoration)
         }
     }
 
@@ -141,7 +145,7 @@ class CategoriesActivity : RobotActivity(), CategoriesContract.View, OnTutorialC
      * Configure the level switch.
      */
     private fun setupSwitch() {
-        level_switch.setOnCheckedChangeListener(OnCheckedChangeListener {
+        binding.levelSwitch.setOnCheckedChangeListener(OnCheckedChangeListener {
             if (it) {
                 presenter.loadTutorials(TutorialLevel.ADVANCED)
                 robot.selectLevel(TutorialLevel.ADVANCED)

@@ -5,9 +5,8 @@
 
 package com.softbankrobotics.qisdktutorials.ui.categories
 
-import androidx.annotation.StringRes
 import android.util.Log
-
+import androidx.annotation.StringRes
 import com.aldebaran.qi.Future
 import com.aldebaran.qi.sdk.QiContext
 import com.aldebaran.qi.sdk.QiSDK
@@ -23,6 +22,7 @@ import com.softbankrobotics.qisdktutorials.R
 import com.softbankrobotics.qisdktutorials.model.data.Tutorial
 import com.softbankrobotics.qisdktutorials.model.data.TutorialCategory
 import com.softbankrobotics.qisdktutorials.model.data.TutorialLevel
+import com.softbankrobotics.qisdktutorials.utils.Constants
 
 private const val TAG = "CategoriesRobot"
 
@@ -32,7 +32,8 @@ private const val LEVEL_ADVANCED = "advanced"
 /**
  * The robot for the tutorial categories.
  */
-internal class CategoriesRobot(private val presenter: CategoriesContract.Presenter) : CategoriesContract.Robot, RobotLifecycleCallbacks {
+internal class CategoriesRobot(private val presenter: CategoriesContract.Presenter) :
+    CategoriesContract.Robot, RobotLifecycleCallbacks {
     private var talkTopicStatus: TopicStatus? = null
     private var moveTopicStatus: TopicStatus? = null
     private var smartTopicStatus: TopicStatus? = null
@@ -41,7 +42,7 @@ internal class CategoriesRobot(private val presenter: CategoriesContract.Present
     private var selectedCategory = TutorialCategory.TALK
     private var selectedLevel = TutorialLevel.BASIC
     private var levelVariable: QiChatVariable? = null
-    private var isFirstIntro = true
+    private var isFirstIntro = false
 
     override fun register(activity: CategoriesActivity) {
         QiSDK.register(activity, this)
@@ -69,7 +70,8 @@ internal class CategoriesRobot(private val presenter: CategoriesContract.Present
     override fun selectTopic(category: TutorialCategory) {
         selectedCategory = category
 
-        val topicsAreReady = talkTopicStatus != null && moveTopicStatus != null && smartTopicStatus != null
+        val topicsAreReady =
+            talkTopicStatus != null && moveTopicStatus != null && smartTopicStatus != null
         if (topicsAreReady) {
             enableTopic(category)
         }
@@ -85,36 +87,37 @@ internal class CategoriesRobot(private val presenter: CategoriesContract.Present
 
     override fun onRobotFocusGained(qiContext: QiContext) {
         SayBuilder.with(qiContext)
-                .withText(qiContext.getString(introSentenceRes()))
-                .build()
-                .run()
+            .withText(qiContext.getString(introSentenceRes()))
+            .withLocale(Constants.Locals.ENGLISH_LOCALE)
+            .build()
+            .run()
 
         isFirstIntro = false
 
         val commonTopic = TopicBuilder.with(qiContext)
-                .withResource(R.raw.common)
-                .build()
+            .withResource(R.raw.common)
+            .build()
 
         val talkTopic = TopicBuilder.with(qiContext)
-                .withResource(R.raw.talk_tutorials)
-                .build()
+            .withResource(R.raw.talk_tutorials)
+            .build()
 
         val moveTopic = TopicBuilder.with(qiContext)
-                .withResource(R.raw.move_tutorials)
-                .build()
+            .withResource(R.raw.move_tutorials)
+            .build()
 
         val smartTopic = TopicBuilder.with(qiContext)
-                .withResource(R.raw.smart_tutorials)
-                .build()
+            .withResource(R.raw.smart_tutorials)
+            .build()
 
         val qiChatbot = QiChatbotBuilder.with(qiContext)
-                .withTopics(listOf(commonTopic, talkTopic, moveTopic, smartTopic))
-                .build()
-                .also { this.qiChatbot = it }
+            .withTopics(listOf(commonTopic, talkTopic, moveTopic, smartTopic))
+            .build()
+            .also { this.qiChatbot = it }
 
         val chat = ChatBuilder.with(qiContext)
-                .withChatbot(qiChatbot)
-                .build()
+            .withChatbot(qiChatbot)
+            .build()
 
         talkTopicStatus = qiChatbot.topicStatus(talkTopic)
         moveTopicStatus = qiChatbot.topicStatus(moveTopic)
@@ -131,18 +134,22 @@ internal class CategoriesRobot(private val presenter: CategoriesContract.Present
                     presenter.loadTutorials(TutorialCategory.TALK)
                     selectTopic(TutorialCategory.TALK)
                 }
+
                 "move" -> {
                     presenter.loadTutorials(TutorialCategory.MOVE)
                     selectTopic(TutorialCategory.MOVE)
                 }
+
                 "smart" -> {
                     presenter.loadTutorials(TutorialCategory.SMART)
                     selectTopic(TutorialCategory.SMART)
                 }
+
                 "basic" -> {
                     presenter.loadTutorials(TutorialLevel.BASIC)
                     selectLevel(TutorialLevel.BASIC)
                 }
+
                 "advanced" -> {
                     presenter.loadTutorials(TutorialLevel.ADVANCED)
                     selectLevel(TutorialLevel.ADVANCED)
@@ -181,13 +188,13 @@ internal class CategoriesRobot(private val presenter: CategoriesContract.Present
         val smartFuture = smartTopicStatus?.async()?.setEnabled(false)
 
         Future.waitAll(talkFuture, moveFuture, smartFuture)
-                .andThenConsume {
-                    when (category) {
-                        TutorialCategory.TALK -> talkTopicStatus?.enabled = true
-                        TutorialCategory.MOVE -> moveTopicStatus?.enabled = true
-                        TutorialCategory.SMART -> smartTopicStatus?.enabled = true
-                    }
+            .andThenConsume {
+                when (category) {
+                    TutorialCategory.TALK -> talkTopicStatus?.enabled = true
+                    TutorialCategory.MOVE -> moveTopicStatus?.enabled = true
+                    TutorialCategory.SMART -> smartTopicStatus?.enabled = true
                 }
+            }
     }
 
     /**

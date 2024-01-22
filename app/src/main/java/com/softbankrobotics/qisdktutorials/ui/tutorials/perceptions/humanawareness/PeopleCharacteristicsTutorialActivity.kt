@@ -8,10 +8,9 @@ package com.softbankrobotics.qisdktutorials.ui.tutorials.perceptions.humanawaren
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.util.Log
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import android.util.Log
-
 import com.aldebaran.qi.sdk.QiContext
 import com.aldebaran.qi.sdk.QiSDK
 import com.aldebaran.qi.sdk.RobotLifecycleCallbacks
@@ -20,10 +19,10 @@ import com.aldebaran.qi.sdk.`object`.actuation.Frame
 import com.aldebaran.qi.sdk.`object`.human.Human
 import com.aldebaran.qi.sdk.`object`.humanawareness.HumanAwareness
 import com.softbankrobotics.qisdktutorials.R
+import com.softbankrobotics.qisdktutorials.databinding.ActivityPeopleCharacteristicsTutorialBinding
 import com.softbankrobotics.qisdktutorials.ui.conversation.ConversationBinder
 import com.softbankrobotics.qisdktutorials.ui.tutorials.TutorialActivity
-import kotlinx.android.synthetic.main.activity_people_characteristics_tutorial.*
-
+import com.softbankrobotics.qisdktutorials.utils.Constants
 import kotlin.math.sqrt
 
 private const val TAG = "CharacteristicsActivity"
@@ -34,12 +33,15 @@ private const val TAG = "CharacteristicsActivity"
  */
 class PeopleCharacteristicsTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks {
 
+    private lateinit var binding: ActivityPeopleCharacteristicsTutorialBinding
+
     private lateinit var conversationBinder: ConversationBinder
 
     private lateinit var humanInfoAdapter: HumanInfoAdapter
 
     // Store the HumanAwareness service.
     private var humanAwareness: HumanAwareness? = null
+
     // The QiContext provided by the QiSDK.
     private var qiContext: QiContext? = null
 
@@ -48,14 +50,22 @@ class PeopleCharacteristicsTutorialActivity : TutorialActivity(), RobotLifecycle
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        binding = ActivityPeopleCharacteristicsTutorialBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
         val layoutManager = LinearLayoutManager(this)
-        recycler_view.layoutManager = layoutManager
-        recycler_view.addItemDecoration(DividerItemDecoration(this, layoutManager.orientation))
+        binding.recyclerView.layoutManager = layoutManager
+        binding.recyclerView.addItemDecoration(
+            DividerItemDecoration(
+                this,
+                layoutManager.orientation
+            )
+        )
         humanInfoAdapter = HumanInfoAdapter()
-        recycler_view.adapter = humanInfoAdapter
+        binding.recyclerView.adapter = humanInfoAdapter
 
         // Find humans around when refresh button clicked.
-        refresh_button.setOnClickListener {
+        binding.refreshButton.setOnClickListener {
             qiContext?.let { findHumansAround(it) }
         }
 
@@ -77,11 +87,12 @@ class PeopleCharacteristicsTutorialActivity : TutorialActivity(), RobotLifecycle
 
         // Bind the conversational events to the view.
         val conversationStatus = qiContext.conversation.status(qiContext.robotContext)
-        conversationBinder = conversation_view.bindConversationTo(conversationStatus)
+        conversationBinder = binding.conversationView.bindConversationTo(conversationStatus)
 
         val say = SayBuilder.with(qiContext)
-                .withText("I can display characteristics about the human I'm seeing.")
-                .build()
+            .withText("I can display characteristics about the human I'm seeing.")
+            .withLocale(Constants.Locals.ENGLISH_LOCALE)
+            .build()
 
         say.run()
 

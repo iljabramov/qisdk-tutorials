@@ -6,17 +6,18 @@
 package com.softbankrobotics.qisdktutorials.ui.categories
 
 import androidx.recyclerview.widget.RecyclerView
-import android.view.View
-
 import com.softbankrobotics.qisdktutorials.R
+import com.softbankrobotics.qisdktutorials.databinding.TutorialLayoutBinding
 import com.softbankrobotics.qisdktutorials.model.data.Tutorial
 import com.softbankrobotics.qisdktutorials.model.data.TutorialLevel
-import kotlinx.android.synthetic.main.tutorial_layout.view.*
 
 /**
  * The view holder to show a tutorial.
  */
-internal class TutorialViewHolder(itemView: View, private val onTutorialClickedListener: OnTutorialClickedListener) : RecyclerView.ViewHolder(itemView) {
+internal class TutorialViewHolder(
+    private val itemBinding: TutorialLayoutBinding,
+    private val onTutorialClickedListener: OnTutorialClickedListener
+) : RecyclerView.ViewHolder(itemBinding.root) {
 
     /**
      * Binds a tutorial to the views.
@@ -24,7 +25,8 @@ internal class TutorialViewHolder(itemView: View, private val onTutorialClickedL
      */
     fun bind(tutorial: Tutorial) {
 
-        with(itemView.radio_button) {
+
+        with(itemBinding.radioButton) {
             isChecked = tutorial.isSelected
             isEnabled = tutorial.isEnabled
             text = "\"${itemView.context.getString(tutorial.nameResId)}\""
@@ -44,12 +46,12 @@ internal class TutorialViewHolder(itemView: View, private val onTutorialClickedL
     private fun bindLevelView(tutorialLevel: TutorialLevel) {
         when (tutorialLevel) {
             TutorialLevel.BASIC -> {
-                itemView.level_textview.setText(R.string.basic_level)
-                itemView.level_textview.setBackgroundResource(R.drawable.basic_level_shape)
+                itemBinding.levelTextview.setText(R.string.basic_level)
+                itemBinding.levelTextview.setBackgroundResource(R.drawable.basic_level_shape)
             }
             TutorialLevel.ADVANCED -> {
-                itemView.level_textview.setText(R.string.advanced_level)
-                itemView.level_textview.setBackgroundResource(R.drawable.advanced_level_shape)
+                itemBinding.levelTextview.setText(R.string.advanced_level)
+                itemBinding.levelTextview.setBackgroundResource(R.drawable.advanced_level_shape)
             }
         }
     }

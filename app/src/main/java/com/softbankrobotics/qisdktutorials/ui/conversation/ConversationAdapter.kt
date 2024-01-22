@@ -5,12 +5,12 @@
 
 package com.softbankrobotics.qisdktutorials.ui.conversation
 
-import androidx.annotation.LayoutRes
-import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
-
+import androidx.annotation.LayoutRes
+import androidx.recyclerview.widget.RecyclerView
 import com.softbankrobotics.qisdktutorials.R
+import com.softbankrobotics.qisdktutorials.databinding.LayoutInfoLogViewBinding
 
 private const val INFO_LOG_VIEW_TYPE = 0
 private const val ERROR_LOG_VIEW_TYPE = 1
@@ -25,9 +25,9 @@ internal class ConversationAdapter : RecyclerView.Adapter<ConversationViewHolder
     private val items = mutableListOf<ConversationItem>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ConversationViewHolder {
-        val layout = layoutFromViewType(viewType)
-        val view = LayoutInflater.from(parent.context).inflate(layout, parent, false)
-        return ConversationViewHolder(view)
+        val itemBinding =
+            LayoutInfoLogViewBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return ConversationViewHolder(itemBinding)
     }
 
     override fun onBindViewHolder(holder: ConversationViewHolder, position: Int) {

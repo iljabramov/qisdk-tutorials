@@ -7,9 +7,8 @@ package com.softbankrobotics.qisdktutorials.ui.tutorials.conversation.bookmarks
 
 import android.media.MediaPlayer
 import android.os.Bundle
-import androidx.annotation.RawRes
 import android.util.Log
-
+import androidx.annotation.RawRes
 import com.aldebaran.qi.sdk.QiContext
 import com.aldebaran.qi.sdk.QiSDK
 import com.aldebaran.qi.sdk.RobotLifecycleCallbacks
@@ -25,10 +24,10 @@ import com.aldebaran.qi.sdk.`object`.conversation.BookmarkStatus
 import com.aldebaran.qi.sdk.`object`.conversation.Chat
 import com.aldebaran.qi.sdk.`object`.conversation.QiChatbot
 import com.softbankrobotics.qisdktutorials.R
+import com.softbankrobotics.qisdktutorials.databinding.ConversationLayoutBinding
 import com.softbankrobotics.qisdktutorials.ui.conversation.ConversationBinder
 import com.softbankrobotics.qisdktutorials.ui.conversation.ConversationItemType
 import com.softbankrobotics.qisdktutorials.ui.tutorials.TutorialActivity
-import kotlinx.android.synthetic.main.conversation_layout.*
 
 private const val TAG = "BookmarksActivity"
 
@@ -37,13 +36,17 @@ private const val TAG = "BookmarksActivity"
  */
 class BookmarksTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks {
 
+    private lateinit var binding: ConversationLayoutBinding
+
     private lateinit var conversationBinder: ConversationBinder
     private var mediaPlayer: MediaPlayer? = null
 
     // Store the QiChatbot.
     private lateinit var qiChatbot: QiChatbot
+
     // Store the Chat action.
     private lateinit var chat: Chat
+
     // Store the proposal bookmark.
     private var proposalBookmark: Bookmark? = null
     // Store the dog BookmarkStatus.
@@ -53,6 +56,9 @@ class BookmarksTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        binding = ConversationLayoutBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         // Register the RobotLifecycleCallbacks to this Activity.
         QiSDK.register(this, this)
@@ -77,7 +83,7 @@ class BookmarksTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks {
     override fun onRobotFocusGained(qiContext: QiContext) {
         // Bind the conversational events to the view.
         val conversationStatus = qiContext.conversation.status(qiContext.robotContext)
-        conversationBinder = conversation_view.bindConversationTo(conversationStatus)
+        conversationBinder = binding.conversationView.bindConversationTo(conversationStatus)
 
         // Create a topic.
         val topic = TopicBuilder.with(qiContext)
@@ -183,7 +189,7 @@ class BookmarksTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks {
     }
 
     private fun displayLine(text: String, type: ConversationItemType) {
-        runOnUiThread { conversation_view.addLine(text, type) }
+        runOnUiThread { binding.conversationView.addLine(text, type) }
     }
 
 }

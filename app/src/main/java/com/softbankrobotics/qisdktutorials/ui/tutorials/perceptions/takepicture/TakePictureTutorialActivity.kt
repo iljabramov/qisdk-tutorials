@@ -21,9 +21,10 @@ import com.aldebaran.qi.sdk.builder.TakePictureBuilder
 import com.aldebaran.qi.sdk.`object`.camera.TakePicture
 import com.aldebaran.qi.sdk.`object`.image.TimestampedImageHandle
 import com.softbankrobotics.qisdktutorials.R
+import com.softbankrobotics.qisdktutorials.databinding.ActivityTakePictureTutorialBinding
 import com.softbankrobotics.qisdktutorials.ui.conversation.ConversationBinder
 import com.softbankrobotics.qisdktutorials.ui.tutorials.TutorialActivity
-import kotlinx.android.synthetic.main.activity_take_picture_tutorial.*
+import com.softbankrobotics.qisdktutorials.utils.Constants
 
 private const val TAG = "TakePictureActivity"
 
@@ -31,6 +32,8 @@ private const val TAG = "TakePictureActivity"
  * The activity for the take picture tutorial.
  */
 class TakePictureTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks {
+
+    private lateinit var binding: ActivityTakePictureTutorialBinding
 
     private var conversationBinder: ConversationBinder? = null
 
@@ -42,8 +45,11 @@ class TakePictureTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        take_pic_button.isEnabled = false
-        take_pic_button.setOnClickListener { takePic() }
+        binding = ActivityTakePictureTutorialBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        binding.takePicButton.isEnabled = false
+        binding.takePicButton.setOnClickListener { takePic() }
 
         // Register the RobotLifecycleCallbacks to this Activity.
         QiSDK.register(this, this)
@@ -64,13 +70,14 @@ class TakePictureTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks 
 
         // Bind the conversational events to the view.
         val conversationStatus = qiContext.conversation.status(qiContext.robotContext)
-        conversationBinder = conversation_view.bindConversationTo(conversationStatus)
+        conversationBinder = binding.conversationView.bindConversationTo(conversationStatus)
 
-        runOnUiThread { take_pic_button.isEnabled = true }
+        runOnUiThread { binding.takePicButton.isEnabled = true }
 
         val say = SayBuilder.with(qiContext)
-                .withText("I can take pictures. Press the button to try!")
-                .build()
+            .withText("I can take pictures. Press the button to try!")
+            .withLocale(Constants.Locals.ENGLISH_LOCALE)
+            .build()
 
         say.run()
     }
@@ -95,7 +102,7 @@ class TakePictureTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks 
         pictureBitmap?.let{
             it.recycle()
             pictureBitmap = null
-            picture_view.setImageBitmap(null)
+            binding.pictureView.setImageBitmap(null)
         }
 
         Log.i(TAG, "build take picture")
@@ -104,8 +111,8 @@ class TakePictureTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks 
         // Take picture
         takePictureFuture.andThenCompose<TimestampedImageHandle>(Qi.onUiThread<TakePicture, Future<TimestampedImageHandle>> { takePicture ->
             Log.i(TAG, "take picture launched!")
-            progress_bar.visibility = View.VISIBLE
-            take_pic_button.isEnabled = false
+            binding.progressBar.visibility = View.VISIBLE
+            binding.takePicButton.isEnabled = false
             takePicture.async().run()
         }).andThenConsume { timestampedImageHandle ->
             //Consume take picture action when it's ready
@@ -117,8 +124,8 @@ class TakePictureTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks 
             Log.i(TAG, "PICTURE RECEIVED!")
 
             runOnUiThread {
-                progress_bar.visibility = View.GONE
-                take_pic_button.isEnabled = true
+                binding.progressBar.visibility = View.GONE
+                binding.takePicButton.isEnabled = true
             }
 
             val buffer = encodedImage.data
@@ -130,7 +137,7 @@ class TakePictureTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks 
             Log.i(TAG, "PICTURE RECEIVED! ($pictureBufferSize Bytes)")
             pictureBitmap = BitmapFactory.decodeByteArray(pictureArray, 0, pictureBufferSize)
             // display picture
-            runOnUiThread { picture_view.setImageBitmap(pictureBitmap) }
+            runOnUiThread { binding.pictureView.setImageBitmap(pictureBitmap) }
         }
     }
 

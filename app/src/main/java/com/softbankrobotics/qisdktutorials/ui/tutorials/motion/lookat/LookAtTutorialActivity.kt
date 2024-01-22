@@ -18,10 +18,11 @@ import com.aldebaran.qi.sdk.builder.TransformBuilder
 import com.aldebaran.qi.sdk.`object`.actuation.LookAt
 import com.aldebaran.qi.sdk.`object`.actuation.LookAtMovementPolicy
 import com.softbankrobotics.qisdktutorials.R
+import com.softbankrobotics.qisdktutorials.databinding.ActivityLookAtTutorialBinding
 import com.softbankrobotics.qisdktutorials.ui.conversation.ConversationBinder
 import com.softbankrobotics.qisdktutorials.ui.conversation.ConversationItemType
 import com.softbankrobotics.qisdktutorials.ui.tutorials.TutorialActivity
-import kotlinx.android.synthetic.main.activity_look_at_tutorial.*
+import com.softbankrobotics.qisdktutorials.utils.Constants
 
 private const val TAG = "LookAtTutorialActivity"
 
@@ -29,6 +30,8 @@ private const val TAG = "LookAtTutorialActivity"
  * The activity for the LookAt tutorial.
  */
 class LookAtTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks {
+
+    private lateinit var binding: ActivityLookAtTutorialBinding
 
     private var conversationBinder: ConversationBinder? = null
 
@@ -41,8 +44,11 @@ class LookAtTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        binding = ActivityLookAtTutorialBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
         // Set the button onClick listener.
-        cancel_button.setOnClickListener {
+        binding.cancelButton.setOnClickListener {
             lookAtFuture?.requestCancellation()
         }
 
@@ -61,10 +67,11 @@ class LookAtTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks {
     override fun onRobotFocusGained(qiContext: QiContext) {
         // Bind the conversational events to the view.
         val conversationStatus = qiContext.conversation.status(qiContext.robotContext)
-        conversationBinder = conversation_view.bindConversationTo(conversationStatus)
+        conversationBinder = binding.conversationView.bindConversationTo(conversationStatus)
 
         val say = SayBuilder.with(qiContext)
-                .withText("I can look at things: I will look at the ground.")
+            .withText("I can look at things: I will look at the ground.")
+            .withLocale(Constants.Locals.ENGLISH_LOCALE)
                 .build()
 
         say.run()
@@ -144,6 +151,6 @@ class LookAtTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks {
     }
 
     private fun displayLine(text: String, type: ConversationItemType) {
-        runOnUiThread { conversation_view.addLine(text, type) }
+        runOnUiThread { binding.conversationView.addLine(text, type) }
     }
 }

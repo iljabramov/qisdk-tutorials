@@ -6,8 +6,6 @@
 package com.softbankrobotics.qisdktutorials.ui.bilateralswitch
 
 import android.content.Context
-import androidx.constraintlayout.widget.ConstraintSet
-import androidx.core.content.ContextCompat
 import android.transition.AutoTransition
 import android.transition.Transition
 import android.transition.TransitionManager
@@ -16,19 +14,25 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.FrameLayout
-
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.constraintlayout.widget.ConstraintSet
+import androidx.core.content.ContextCompat
 import com.softbankrobotics.qisdktutorials.R
-import kotlinx.android.synthetic.main.bilateral_switch.view.*
+import com.softbankrobotics.qisdktutorials.databinding.BilateralSwitchBinding
 
-private const val BACKGROUND_FIRST_SECTION_COLOR = R.color.basic_green
-private const val BACKGROUND_SECOND_SECTION_COLOR = R.color.advanced_orange
+private val BACKGROUND_FIRST_SECTION_COLOR = R.color.basic_green
+private val BACKGROUND_SECOND_SECTION_COLOR = R.color.advanced_orange
 
 private const val TRANSITION_DURATION = 100
 
-private const val FIRST_SECTION_TEXT = R.string.basic_level
-private const val SECOND_SECTION_TEXT = R.string.advanced_level
+private val FIRST_SECTION_TEXT = R.string.basic_level
+private val SECOND_SECTION_TEXT = R.string.advanced_level
 
-class BilateralSwitch (context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : FrameLayout(context, attrs, defStyleAttr), View.OnClickListener {
+class BilateralSwitch(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) :
+    FrameLayout(context, attrs, defStyleAttr), View.OnClickListener {
+
+    private lateinit var binding: BilateralSwitchBinding
+    // only valid between inflate and onDestroyView
 
     private var allowClick = true
     private var isChecked = false
@@ -37,6 +41,7 @@ class BilateralSwitch (context: Context, attrs: AttributeSet? = null, defStyleAt
     private var onCheckedChangeListener: OnCheckedChangeListener? = null
     private var firstSectionName: String? = null
     private var secondSectionName: String? = null
+
 
     init {
         if (attrs != null) {
@@ -58,15 +63,21 @@ class BilateralSwitch (context: Context, attrs: AttributeSet? = null, defStyleAt
     }
 
     private fun inflateLayout() {
-        LayoutInflater.from(context).inflate(R.layout.bilateral_switch, this, true)
+//        LayoutInflater.from(context).inflate(R.layout.bilateral_switch, this, true)
+        binding = BilateralSwitchBinding.inflate(LayoutInflater.from(context), this, true)
 
         setOnClickListener(this)
 
-        level_view.text = resources.getString(FIRST_SECTION_TEXT)
-        color_layer.setBackgroundColor(ContextCompat.getColor(context, BACKGROUND_FIRST_SECTION_COLOR))
+        binding.levelView.text = resources.getString(FIRST_SECTION_TEXT)
+        binding.colorLayer.setBackgroundColor(
+            ContextCompat.getColor(
+                context,
+                BACKGROUND_FIRST_SECTION_COLOR
+            )
+        )
 
-        first_section.text = firstSectionName
-        second_section.text = secondSectionName
+        binding.firstSection.text = firstSectionName
+        binding.secondSection.text = secondSectionName
     }
 
     fun setOnCheckedChangeListener(onCheckedChangeListener: OnCheckedChangeListener) {
@@ -81,7 +92,7 @@ class BilateralSwitch (context: Context, attrs: AttributeSet? = null, defStyleAt
 
         allowClick = false
 
-        button_hover.visibility = View.VISIBLE
+        binding.buttonHover.visibility = View.VISIBLE
         collapseTransition()
     }
 
@@ -94,6 +105,7 @@ class BilateralSwitch (context: Context, attrs: AttributeSet? = null, defStyleAt
 
     private fun collapseTransition() {
         val cs = ConstraintSet()
+        val layout: ConstraintLayout = binding.layout
         cs.clone(layout)
 
         if (!isChecked) {
@@ -109,12 +121,12 @@ class BilateralSwitch (context: Context, attrs: AttributeSet? = null, defStyleAt
         firstTransition.duration = TRANSITION_DURATION.toLong()
 
         firstTransition.addEndListener { transition, listener ->
-            button_hover.visibility = View.GONE
+            binding.buttonHover.visibility = View.GONE
 
             if (isChecked) {
-                level_view.text = resources.getString(FIRST_SECTION_TEXT)
+                binding.levelView.text = resources.getString(FIRST_SECTION_TEXT)
             } else {
-                level_view.text = resources.getString(SECOND_SECTION_TEXT)
+                binding.levelView.text = resources.getString(SECOND_SECTION_TEXT)
             }
 
             transition.removeListener(listener)
@@ -129,16 +141,32 @@ class BilateralSwitch (context: Context, attrs: AttributeSet? = null, defStyleAt
 
     private fun expandTransition() {
         val cs = ConstraintSet()
+        val layout: ConstraintLayout = binding.layout
         cs.clone(layout)
 
         if (!isChecked) {
             cs.connect(R.id.color_layer, ConstraintSet.END, R.id.second_section, ConstraintSet.END)
             cs.connect(R.id.color_layer, ConstraintSet.START, R.id.level_view, ConstraintSet.START)
-            color_layer.setBackgroundColor(ContextCompat.getColor(context, BACKGROUND_SECOND_SECTION_COLOR))
+            binding.colorLayer.setBackgroundColor(
+                ContextCompat.getColor(
+                    context,
+                    BACKGROUND_SECOND_SECTION_COLOR
+                )
+            )
         } else {
             cs.connect(R.id.color_layer, ConstraintSet.END, R.id.level_view, ConstraintSet.END)
-            cs.connect(R.id.color_layer, ConstraintSet.START, R.id.first_section, ConstraintSet.START)
-            color_layer.setBackgroundColor(ContextCompat.getColor(context, BACKGROUND_FIRST_SECTION_COLOR))
+            cs.connect(
+                R.id.color_layer,
+                ConstraintSet.START,
+                R.id.first_section,
+                ConstraintSet.START
+            )
+            binding.colorLayer.setBackgroundColor(
+                ContextCompat.getColor(
+                    context,
+                    BACKGROUND_FIRST_SECTION_COLOR
+                )
+            )
         }
 
         val firstTransition = AutoTransition()
