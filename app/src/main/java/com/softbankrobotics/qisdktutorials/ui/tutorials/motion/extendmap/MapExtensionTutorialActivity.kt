@@ -16,6 +16,7 @@ import com.aldebaran.qi.sdk.`object`.actuation.LocalizationStatus
 import com.aldebaran.qi.sdk.`object`.actuation.LocalizeAndMap
 import com.aldebaran.qi.sdk.util.FutureUtils
 import com.softbankrobotics.qisdktutorials.R
+import com.softbankrobotics.qisdktutorials.databinding.ActivityAutonomousAbilitiesTutorialBinding
 import com.softbankrobotics.qisdktutorials.databinding.ActivityExplorationMapRepresentationTutorialBinding
 import com.softbankrobotics.qisdktutorials.ui.conversation.ConversationBinder
 import com.softbankrobotics.qisdktutorials.ui.conversation.ConversationItemType
@@ -26,10 +27,10 @@ import java.util.concurrent.TimeUnit
 /**
  * The tutorial to extend an ExplorationMap.
  */
-class MapExtensionTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks {
-
-    private lateinit var binding: ActivityExplorationMapRepresentationTutorialBinding
-
+class MapExtensionTutorialActivity : TutorialActivity<ActivityExplorationMapRepresentationTutorialBinding>(), RobotLifecycleCallbacks {
+    override fun inflateBinding(): ActivityExplorationMapRepresentationTutorialBinding {
+        return ActivityExplorationMapRepresentationTutorialBinding.inflate(layoutInflater)
+    }
     private var conversationBinder: ConversationBinder? = null
 
     // The QiContext provided by the QiSDK.
@@ -40,9 +41,6 @@ class MapExtensionTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        binding = ActivityExplorationMapRepresentationTutorialBinding.inflate(layoutInflater)
-        setContentView(binding.root)
 
         // Set the button onClick listener.
         binding.startMappingButton.setOnClickListener {
@@ -79,9 +77,6 @@ class MapExtensionTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks
         QiSDK.unregister(this, this)
         super.onDestroy()
     }
-
-    override val layoutId = R.layout.activity_exploration_map_representation_tutorial
-
     override fun onRobotFocusGained(qiContext: QiContext) {
         // Store the provided QiContext.
         this.qiContext = qiContext

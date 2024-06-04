@@ -4,79 +4,52 @@
  */
 
 package com.softbankrobotics.qisdktutorials.ui.tutorials
-
-import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import android.view.View
-import android.view.ViewTreeObserver
+import android.widget.FrameLayout
 import android.widget.ImageView
-import androidx.annotation.LayoutRes
 import com.aldebaran.qi.sdk.design.activity.RobotActivity
 import com.softbankrobotics.qisdktutorials.R
-import com.softbankrobotics.qisdktutorials.databinding.ActivityTakePictureTutorialBinding
-import com.softbankrobotics.qisdktutorials.model.data.TutorialLevel
-import com.softbankrobotics.qisdktutorials.utils.Constants
+import androidx.appcompat.widget.Toolbar
+import androidx.viewbinding.ViewBinding
 
 /**
  * Base class for a tutorial activity.
  */
+
 private const val TAG = "TutorialActivity"
 
-abstract class TutorialActivity : RobotActivity() {
+abstract class TutorialActivity<VB : ViewBinding> : RobotActivity() {
 
-    private lateinit var binding: ActivityTakePictureTutorialBinding
+    private var _binding: VB? = null
+    protected val binding get() = _binding!!
 
-    private lateinit var rootView: View
-    private var globalLayoutListener: ViewTreeObserver.OnGlobalLayoutListener? = null
+    protected lateinit var toolbar: Toolbar
 
-    /**
-     * Provide the tutorial layout identifier.
-     * @return The layout identifier.
-     */
-    @get:LayoutRes
-    protected abstract val layoutId: Int
+    abstract fun inflateBinding(): VB
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityTakePictureTutorialBinding.inflate(layoutInflater)
+        setContentView(R.layout.activity_base_tutorial)
 
-        val view = binding.root
-        setContentView(view)
+        toolbar = findViewById(R.id.toolbar)
         setupToolbar()
+
+        _binding = inflateBinding()
+        val contentFrame = findViewById<FrameLayout>(R.id.content_frame)
+        contentFrame.addView(binding.root)
     }
 
-    override fun onResume() {
-        super.onResume()
-
-        rootView = findViewById(android.R.id.content)
-        globalLayoutListener = ViewTreeObserver.OnGlobalLayoutListener {
-            val rect = Rect()
-            rootView.getWindowVisibleDisplayFrame(rect)
-            val screenHeight = rootView.height
-            val keypadHeight = screenHeight.minus(rect.bottom)
-
-            // Hide system UI if keyboard is closed.
-            if (keypadHeight <= screenHeight * 0.30) {
-                hideSystemUI()
-            }
-        }
-        rootView.viewTreeObserver?.addOnGlobalLayoutListener(globalLayoutListener)
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
     }
 
-    override fun onPause() {
-        rootView.viewTreeObserver?.removeOnGlobalLayoutListener(globalLayoutListener)
-        super.onPause()
-    }
-
-    /**
-     * Configures the toolbar.
-     */
     private fun setupToolbar() {
-        setSupportActionBar(binding.toolbar)
+        setSupportActionBar(toolbar)
 
-        binding.toolbar.findViewById<ImageView>(R.id.back_arrow).setOnClickListener {
+        toolbar.findViewById<ImageView>(R.id.back_arrow).setOnClickListener {
             Log.d(TAG, "Back arrow clicked")
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S_V2) {
                 onBackPressed()
@@ -85,7 +58,7 @@ abstract class TutorialActivity : RobotActivity() {
             }
         }
 
-        val nameNotFound = -1
+        /*val nameNotFound = -1
         val nameResId = intent.getIntExtra(Constants.Intent.TUTORIAL_NAME_KEY, nameNotFound)
         var level: TutorialLevel?
 
@@ -96,8 +69,8 @@ abstract class TutorialActivity : RobotActivity() {
                 TutorialLevel::class.java
             ) as TutorialLevel
             if (nameResId != nameNotFound) {
-                binding.toolbar.setName(nameResId)
-                binding.toolbar.setLevel(level)
+                toolbar.setName(nameResId)
+                toolbar.setLevel(level)
             }
         } else {
             level =
@@ -105,28 +78,18 @@ abstract class TutorialActivity : RobotActivity() {
         }
 
         if (nameResId != nameNotFound) {
-            binding.toolbar.setName(nameResId)
-            binding.toolbar.setLevel(level)
-        }
+            toolbar.setName(nameResId)
+            toolbar.setLevel(level)
+        }*/
 
-        binding.toolbar.findViewById<ImageView>(R.id.close_button).setOnClickListener {
+        toolbar.findViewById<ImageView>(R.id.close_button).setOnClickListener {
             Log.d(TAG, "Close button clicked")
             finishAffinity()
         }
 
     }
-
-    private fun hideSystemUI() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            window.setDecorFitsSystemWindows(false)
-        } else {
-            val decorView = window.decorView
-            decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                    or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                    or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                    or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                    or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                    or View.SYSTEM_UI_FLAG_FULLSCREEN)
-        }
-    }
 }
+
+
+
+

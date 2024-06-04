@@ -57,7 +57,7 @@ internal class CategoriesRouter : CategoriesContract.Router {
      * @param tutorialId the tutorial identifier
      * @return The destination activity class.
      */
-    private fun getDestinationActivity(tutorialId: TutorialId): Class<out TutorialActivity> {
+    private fun getDestinationActivity(tutorialId: TutorialId): Class<out TutorialActivity<*>> {
         Log.i(TAG, "tutorialId: $tutorialId")
         return when (tutorialId) {
             TutorialId.SAY -> HelloHumanTutorialActivity::class.java

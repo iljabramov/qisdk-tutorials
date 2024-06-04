@@ -16,6 +16,7 @@ import com.aldebaran.qi.sdk.builder.SayBuilder
 import com.aldebaran.qi.sdk.`object`.actuation.EnforceTabletReachability
 import com.aldebaran.qi.sdk.`object`.conversation.Say
 import com.softbankrobotics.qisdktutorials.R
+import com.softbankrobotics.qisdktutorials.databinding.ActivityAutonomousAbilitiesTutorialBinding
 import com.softbankrobotics.qisdktutorials.databinding.ActivityEnforceTabletReachabilityTutorialBinding
 import com.softbankrobotics.qisdktutorials.ui.conversation.ConversationBinder
 import com.softbankrobotics.qisdktutorials.ui.conversation.ConversationItemType
@@ -27,10 +28,11 @@ private const val TAG = "TabletReachActivity"
 /**
  * The activity for the EnforceTabletReachability tutorial.
  */
-class EnforceTabletReachabilityTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks {
+class EnforceTabletReachabilityTutorialActivity : TutorialActivity<ActivityEnforceTabletReachabilityTutorialBinding>(), RobotLifecycleCallbacks {
 
-    private lateinit var binding: ActivityEnforceTabletReachabilityTutorialBinding
-
+    override fun inflateBinding(): ActivityEnforceTabletReachabilityTutorialBinding {
+        return ActivityEnforceTabletReachabilityTutorialBinding.inflate(layoutInflater)
+    }
     private var conversationBinder: ConversationBinder? = null
 
     // Store qiContext
@@ -50,9 +52,6 @@ class EnforceTabletReachabilityTutorialActivity : TutorialActivity(), RobotLifec
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        binding = ActivityEnforceTabletReachabilityTutorialBinding.inflate(layoutInflater)
-        setContentView(binding.root)
 
         binding.tabletReachabilityButton.setOnClickListener {
             val enforceTabletReachabilityFuture = this.enforceTabletReachabilityFuture
@@ -111,8 +110,6 @@ class EnforceTabletReachabilityTutorialActivity : TutorialActivity(), RobotLifec
         QiSDK.unregister(this, this)
         super.onDestroy()
     }
-
-    override val layoutId = R.layout.activity_enforce_tablet_reachability_tutorial
 
     override fun onRobotFocusGained(qiContext: QiContext) {
         // Store qiContext

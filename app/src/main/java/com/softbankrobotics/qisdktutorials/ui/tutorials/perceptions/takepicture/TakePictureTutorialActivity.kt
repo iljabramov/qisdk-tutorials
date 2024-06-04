@@ -21,6 +21,7 @@ import com.aldebaran.qi.sdk.builder.TakePictureBuilder
 import com.aldebaran.qi.sdk.`object`.camera.TakePicture
 import com.aldebaran.qi.sdk.`object`.image.TimestampedImageHandle
 import com.softbankrobotics.qisdktutorials.R
+import com.softbankrobotics.qisdktutorials.databinding.ActivityAutonomousAbilitiesTutorialBinding
 import com.softbankrobotics.qisdktutorials.databinding.ActivityTakePictureTutorialBinding
 import com.softbankrobotics.qisdktutorials.ui.conversation.ConversationBinder
 import com.softbankrobotics.qisdktutorials.ui.tutorials.TutorialActivity
@@ -31,9 +32,11 @@ private const val TAG = "TakePictureActivity"
 /**
  * The activity for the take picture tutorial.
  */
-class TakePictureTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks {
+class TakePictureTutorialActivity : TutorialActivity<ActivityTakePictureTutorialBinding>(), RobotLifecycleCallbacks {
 
-    private lateinit var binding: ActivityTakePictureTutorialBinding
+    override fun inflateBinding(): ActivityTakePictureTutorialBinding {
+        return ActivityTakePictureTutorialBinding.inflate(layoutInflater)
+    }
 
     private var conversationBinder: ConversationBinder? = null
 
@@ -44,9 +47,6 @@ class TakePictureTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        binding = ActivityTakePictureTutorialBinding.inflate(layoutInflater)
-        setContentView(binding.root)
 
         binding.takePicButton.isEnabled = false
         binding.takePicButton.setOnClickListener { takePic() }
@@ -61,8 +61,6 @@ class TakePictureTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks 
         QiSDK.unregister(this, this)
         super.onDestroy()
     }
-
-    override val layoutId = R.layout.activity_take_picture_tutorial
 
     override fun onRobotFocusGained(qiContext: QiContext) {
         // Store the provided QiContext.

@@ -17,6 +17,7 @@ import com.aldebaran.qi.sdk.builder.TransformBuilder
 import com.aldebaran.qi.sdk.`object`.actuation.GoTo
 import com.softbankrobotics.qisdktutorials.R
 import com.softbankrobotics.qisdktutorials.databinding.ActivityAutonomousAbilitiesTutorialBinding
+import com.softbankrobotics.qisdktutorials.databinding.ConversationLayoutBinding
 import com.softbankrobotics.qisdktutorials.ui.conversation.ConversationBinder
 import com.softbankrobotics.qisdktutorials.ui.conversation.ConversationItemType
 import com.softbankrobotics.qisdktutorials.ui.tutorials.TutorialActivity
@@ -27,9 +28,10 @@ private const val TAG = "GoToTutorialActivity"
 /**
  * The activity for the GoTo tutorial.
  */
-class GoToTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks {
-
-    private lateinit var binding: ActivityAutonomousAbilitiesTutorialBinding
+class GoToTutorialActivity : TutorialActivity<ActivityAutonomousAbilitiesTutorialBinding>(), RobotLifecycleCallbacks {
+    override fun inflateBinding(): ActivityAutonomousAbilitiesTutorialBinding {
+        return ActivityAutonomousAbilitiesTutorialBinding.inflate(layoutInflater)
+    }
 
     private var conversationBinder: ConversationBinder? = null
 
@@ -38,10 +40,6 @@ class GoToTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        binding = ActivityAutonomousAbilitiesTutorialBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-
         // Register the RobotLifecycleCallbacks to this Activity.
         QiSDK.register(this, this)
     }
@@ -51,8 +49,6 @@ class GoToTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks {
         QiSDK.unregister(this, this)
         super.onDestroy()
     }
-
-    override val layoutId = R.layout.conversation_layout
 
     override fun onRobotFocusGained(qiContext: QiContext) {
         // Bind the conversational events to the view.

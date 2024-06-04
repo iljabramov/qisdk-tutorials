@@ -22,6 +22,7 @@ import com.aldebaran.qi.sdk.`object`.actuation.FreeFrame
 import com.aldebaran.qi.sdk.`object`.actuation.GoTo
 import com.aldebaran.qi.sdk.`object`.actuation.Mapping
 import com.softbankrobotics.qisdktutorials.R
+import com.softbankrobotics.qisdktutorials.databinding.ActivityAutonomousAbilitiesTutorialBinding
 import com.softbankrobotics.qisdktutorials.databinding.ActivityGoToWorldTutorialBinding
 import com.softbankrobotics.qisdktutorials.ui.conversation.ConversationBinder
 import com.softbankrobotics.qisdktutorials.ui.conversation.ConversationItemType
@@ -34,10 +35,11 @@ private const val TAG = "GoToWorldActivity"
 /**
  * The activity for the Go to world tutorial.
  */
-class GoToWorldTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks {
+class GoToWorldTutorialActivity : TutorialActivity<ActivityGoToWorldTutorialBinding>(), RobotLifecycleCallbacks {
 
-    private lateinit var binding: ActivityGoToWorldTutorialBinding
-
+    override fun inflateBinding(): ActivityGoToWorldTutorialBinding {
+        return ActivityGoToWorldTutorialBinding.inflate(layoutInflater)
+    }
     private var conversationBinder: ConversationBinder? = null
     private lateinit var spinnerAdapter: ArrayAdapter<String>
 
@@ -61,9 +63,6 @@ class GoToWorldTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        binding = ActivityGoToWorldTutorialBinding.inflate(layoutInflater)
-        setContentView(binding.root)
 
         binding.addItemEdit.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
@@ -116,8 +115,6 @@ class GoToWorldTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks {
         QiSDK.unregister(this, this)
         super.onDestroy()
     }
-
-    override val layoutId = R.layout.activity_go_to_world_tutorial
 
     override fun onRobotFocusGained(qiContext: QiContext) {
         Log.i(TAG, "Focus gained.")

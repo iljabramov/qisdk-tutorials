@@ -25,9 +25,10 @@ private const val TAG = "TouchTutorialActivity"
 /**
  * The activity for the Touch tutorial.
  */
-class TouchTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks {
-
-    private lateinit var binding: ActivityAutonomousAbilitiesTutorialBinding
+class TouchTutorialActivity : TutorialActivity<ActivityAutonomousAbilitiesTutorialBinding>(), RobotLifecycleCallbacks {
+    override fun inflateBinding(): ActivityAutonomousAbilitiesTutorialBinding {
+        return ActivityAutonomousAbilitiesTutorialBinding.inflate(layoutInflater)
+    }
 
     private var conversationBinder: ConversationBinder? = null
 
@@ -36,9 +37,6 @@ class TouchTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        binding = ActivityAutonomousAbilitiesTutorialBinding.inflate(layoutInflater)
-        setContentView(binding.root)
 
         // Register the RobotLifecycleCallbacks to this Activity.
         QiSDK.register(this, this)
@@ -49,9 +47,6 @@ class TouchTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks {
         QiSDK.unregister(this, this)
         super.onDestroy()
     }
-
-    override val layoutId = R.layout.conversation_layout
-
     override fun onRobotFocusGained(qiContext: QiContext) {
         // Bind the conversational events to the view.
         val conversationStatus = qiContext.conversation.status(qiContext.robotContext)

@@ -8,11 +8,6 @@
     android:gravity="center_horizontal"
     tools:context=".ui.tutorials.perceptions.takepicture.TakePictureTutorialActivity">
 
-    <com.softbankrobotics.qisdktutorials.ui.tutorialtoolbar.TutorialToolbar
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
     <com.softbankrobotics.qisdktutorials.ui.conversation.ConversationView
         style="@style/RecyclerView"
         android:id="@+id/conversation_view"

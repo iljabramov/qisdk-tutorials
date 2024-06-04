@@ -13,6 +13,7 @@ import com.aldebaran.qi.sdk.QiSDK
 import com.aldebaran.qi.sdk.RobotLifecycleCallbacks
 import com.aldebaran.qi.sdk.builder.SayBuilder
 import com.softbankrobotics.qisdktutorials.R
+import com.softbankrobotics.qisdktutorials.databinding.ActivityAutonomousAbilitiesTutorialBinding
 import com.softbankrobotics.qisdktutorials.databinding.ActivityEmotionTutorialBinding
 import com.softbankrobotics.qisdktutorials.ui.conversation.ConversationBinder
 import com.softbankrobotics.qisdktutorials.ui.tutorials.TutorialActivity
@@ -21,10 +22,11 @@ import com.softbankrobotics.qisdktutorials.utils.Constants
 /**
  * The activity for the Emotion tutorial.
  */
-class EmotionTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks, OnBasicEmotionChangedListener {
+class EmotionTutorialActivity : TutorialActivity<ActivityEmotionTutorialBinding>(), RobotLifecycleCallbacks, OnBasicEmotionChangedListener {
 
-    private lateinit var binding: ActivityEmotionTutorialBinding
-
+    override fun inflateBinding(): ActivityEmotionTutorialBinding {
+        return ActivityEmotionTutorialBinding.inflate(layoutInflater)
+    }
     // Store the basic emotion observer.
     private var basicEmotionObserver: BasicEmotionObserver? = null
 
@@ -32,9 +34,6 @@ class EmotionTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks, OnB
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        binding = ActivityEmotionTutorialBinding.inflate(layoutInflater)
-        setContentView(binding.root)
 
         // Create the basic emotion observer and listen to it.
         basicEmotionObserver = BasicEmotionObserver()
@@ -53,9 +52,6 @@ class EmotionTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks, OnB
         QiSDK.unregister(this, this)
         super.onDestroy()
     }
-
-    override val layoutId = R.layout.activity_emotion_tutorial
-
     override fun onRobotFocusGained(qiContext: QiContext) {
         // Bind the conversational events to the view.
         val conversationStatus = qiContext.conversation.status(qiContext.robotContext)

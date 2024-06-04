@@ -26,10 +26,11 @@ import com.softbankrobotics.qisdktutorials.utils.Constants
 /**
  * The activity for the autonomous abilities tutorial.
  */
-class AutonomousAbilitiesTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks {
+class AutonomousAbilitiesTutorialActivity : TutorialActivity<ActivityAutonomousAbilitiesTutorialBinding>(), RobotLifecycleCallbacks {
 
-    private lateinit var binding: ActivityAutonomousAbilitiesTutorialBinding
-
+    override fun inflateBinding(): ActivityAutonomousAbilitiesTutorialBinding {
+        return ActivityAutonomousAbilitiesTutorialBinding.inflate(layoutInflater)
+    }
     private var conversationBinder: ConversationBinder? = null
 
     // A boolean used to store the abilities status.
@@ -43,9 +44,6 @@ class AutonomousAbilitiesTutorialActivity : TutorialActivity(), RobotLifecycleCa
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        binding = ActivityAutonomousAbilitiesTutorialBinding.inflate(layoutInflater)
-        setContentView(binding.root)
 
         // Set the button onClick listener.
         binding.buttonSwitchAutonomous.setOnClickListener {
@@ -64,8 +62,6 @@ class AutonomousAbilitiesTutorialActivity : TutorialActivity(), RobotLifecycleCa
         QiSDK.unregister(this, this)
         super.onDestroy()
     }
-
-    override val layoutId = R.layout.activity_autonomous_abilities_tutorial
 
     override fun onRobotFocusGained(qiContext: QiContext) {
         // Store the provided QiContext.
