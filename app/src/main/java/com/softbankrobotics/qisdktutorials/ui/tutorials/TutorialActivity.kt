@@ -4,9 +4,12 @@
  */
 
 package com.softbankrobotics.qisdktutorials.ui.tutorials
+import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.View
+import android.view.ViewTreeObserver
 import android.widget.FrameLayout
 import android.widget.ImageView
 import com.aldebaran.qi.sdk.design.activity.RobotActivity
@@ -27,7 +30,11 @@ abstract class TutorialActivity<VB : ViewBinding> : RobotActivity() {
     private var _binding: VB? = null
     protected val binding get() = _binding!!
 
-    protected lateinit var toolbar: TutorialToolbar
+    private lateinit var toolbar: TutorialToolbar
+    private lateinit var rootView: View
+
+    private var globalLayoutListener: ViewTreeObserver.OnGlobalLayoutListener? = null
+
 
     abstract fun inflateBinding(): VB
 
@@ -41,6 +48,29 @@ abstract class TutorialActivity<VB : ViewBinding> : RobotActivity() {
         _binding = inflateBinding()
         val contentFrame = findViewById<FrameLayout>(R.id.content_frame)
         contentFrame.addView(binding.root)
+    }
+
+    override fun onPause() {
+        rootView.viewTreeObserver?.removeOnGlobalLayoutListener(globalLayoutListener)
+        super.onPause()
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        rootView = findViewById(android.R.id.content)
+        globalLayoutListener = ViewTreeObserver.OnGlobalLayoutListener {
+            val rect = Rect()
+            rootView.getWindowVisibleDisplayFrame(rect)
+            val screenHeight = rootView.height
+            val keypadHeight = screenHeight.minus(rect.bottom)
+
+            // Hide system UI if keyboard is closed.
+            if (keypadHeight <= screenHeight * 0.30) {
+                hideSystemUI()
+            }
+        }
+        rootView.viewTreeObserver?.addOnGlobalLayoutListener(globalLayoutListener)
     }
 
     override fun onDestroy() {
@@ -89,6 +119,20 @@ abstract class TutorialActivity<VB : ViewBinding> : RobotActivity() {
             finishAffinity()
         }
 
+    }
+
+    private fun hideSystemUI() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            window.setDecorFitsSystemWindows(false)
+        } else {
+            val decorView = window.decorView
+            decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                    or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                    or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                    or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                    or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                    or View.SYSTEM_UI_FLAG_FULLSCREEN)
+        }
     }
 }
 
