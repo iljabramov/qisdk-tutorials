@@ -11,8 +11,10 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import com.aldebaran.qi.sdk.design.activity.RobotActivity
 import com.softbankrobotics.qisdktutorials.R
-import androidx.appcompat.widget.Toolbar
 import androidx.viewbinding.ViewBinding
+import com.softbankrobotics.qisdktutorials.model.data.TutorialLevel
+import com.softbankrobotics.qisdktutorials.ui.tutorialtoolbar.TutorialToolbar
+import com.softbankrobotics.qisdktutorials.utils.Constants
 
 /**
  * Base class for a tutorial activity.
@@ -25,7 +27,7 @@ abstract class TutorialActivity<VB : ViewBinding> : RobotActivity() {
     private var _binding: VB? = null
     protected val binding get() = _binding!!
 
-    protected lateinit var toolbar: Toolbar
+    protected lateinit var toolbar: TutorialToolbar
 
     abstract fun inflateBinding(): VB
 
@@ -58,7 +60,7 @@ abstract class TutorialActivity<VB : ViewBinding> : RobotActivity() {
             }
         }
 
-        /*val nameNotFound = -1
+        val nameNotFound = -1
         val nameResId = intent.getIntExtra(Constants.Intent.TUTORIAL_NAME_KEY, nameNotFound)
         var level: TutorialLevel?
 
@@ -80,7 +82,7 @@ abstract class TutorialActivity<VB : ViewBinding> : RobotActivity() {
         if (nameResId != nameNotFound) {
             toolbar.setName(nameResId)
             toolbar.setLevel(level)
-        }*/
+        }
 
         toolbar.findViewById<ImageView>(R.id.close_button).setOnClickListener {
             Log.d(TAG, "Close button clicked")

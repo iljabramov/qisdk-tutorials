@@ -18,7 +18,6 @@
         app:layout_constraintBottom_toTopOf="@+id/startMappingButton"
         app:layout_constraintEnd_toStartOf="@+id/mapImageView"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar"
         android:paddingStart="8dp"
         android:paddingEnd="8dp"/>
 
@@ -32,8 +31,7 @@
         android:layout_marginEnd="@dimen/activity_horizontal_margin"
         app:layout_constraintBottom_toTopOf="@+id/startMappingButton"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/conversation_view"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar"/>
+        app:layout_constraintStart_toEndOf="@+id/conversation_view" />
 
     <Button
         style="@style/Button"
