@@ -20,6 +20,7 @@ import com.aldebaran.qi.sdk.builder.TopicBuilder
 import com.aldebaran.qi.sdk.`object`.conversation.EditablePhraseSet
 import com.aldebaran.qi.sdk.`object`.conversation.Phrase
 import com.softbankrobotics.qisdktutorials.R
+import com.softbankrobotics.qisdktutorials.databinding.ActivityAutonomousAbilitiesTutorialBinding
 import com.softbankrobotics.qisdktutorials.databinding.ActivityDynamicConceptsTutorialBinding
 import com.softbankrobotics.qisdktutorials.ui.conversation.ConversationBinder
 import com.softbankrobotics.qisdktutorials.ui.tutorials.TutorialActivity
@@ -29,10 +30,11 @@ import com.softbankrobotics.qisdktutorials.utils.KeyboardUtils
 /**
  * The activity for the Dynamic concepts tutorial.
  */
-class DynamicConceptsTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks {
+class DynamicConceptsTutorialActivity : TutorialActivity<ActivityDynamicConceptsTutorialBinding>(), RobotLifecycleCallbacks {
 
-    private lateinit var binding: ActivityDynamicConceptsTutorialBinding
-
+    override fun inflateBinding(): ActivityDynamicConceptsTutorialBinding {
+        return ActivityDynamicConceptsTutorialBinding.inflate(layoutInflater)
+    }
     private lateinit var greetingAdapter: GreetingAdapter
     private lateinit var conversationBinder: ConversationBinder
 
@@ -41,10 +43,6 @@ class DynamicConceptsTutorialActivity : TutorialActivity(), RobotLifecycleCallba
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        binding = ActivityDynamicConceptsTutorialBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-
         binding.addItemEdit.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 handleAddClick()
@@ -78,8 +76,6 @@ class DynamicConceptsTutorialActivity : TutorialActivity(), RobotLifecycleCallba
         QiSDK.unregister(this, this)
         super.onDestroy()
     }
-
-    override val layoutId = R.layout.activity_dynamic_concepts_tutorial
 
     override fun onRobotFocusGained(qiContext: QiContext) {
         // Bind the conversational events to the view.

@@ -8,17 +8,6 @@
     tools:layout_editor_absoluteY="0dp"
     tools:layout_editor_absoluteX="0dp">
 
-    <com.softbankrobotics.qisdktutorials.ui.tutorialtoolbar.TutorialToolbar
-        android:id="@+id/toolbar"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginRight="0dp"
-        app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginLeft="0dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="0dp" />
-
     <Button
         style="@style/Button"
         android:id="@+id/follow_button"
@@ -53,7 +42,6 @@
         app:layout_constraintBottom_toTopOf="@+id/follow_button"
         tools:layout_editor_absoluteX="0dp"
         android:layout_marginTop="@dimen/activity_vertical_margin"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar"
         android:layout_marginStart="@dimen/activity_horizontal_margin"
         android:layout_marginEnd="@dimen/activity_horizontal_margin"
         android:paddingStart="8dp"

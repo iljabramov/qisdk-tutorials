@@ -23,6 +23,7 @@ import com.aldebaran.qi.sdk.`object`.locale.Language
 import com.aldebaran.qi.sdk.`object`.locale.Locale
 import com.aldebaran.qi.sdk.`object`.locale.Region
 import com.softbankrobotics.qisdktutorials.R
+import com.softbankrobotics.qisdktutorials.databinding.ActivityAutonomousAbilitiesTutorialBinding
 import com.softbankrobotics.qisdktutorials.databinding.ActivityChatLocaleTutorialBinding
 import com.softbankrobotics.qisdktutorials.ui.conversation.ConversationBinder
 import com.softbankrobotics.qisdktutorials.ui.conversation.ConversationItemType
@@ -34,10 +35,11 @@ private const val TAG = "ChatLocaleActivity"
 /**
  * The tutorial for choosing a locale for a Chat.
  */
-class ChatLocaleTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks {
+class ChatLocaleTutorialActivity : TutorialActivity<ActivityChatLocaleTutorialBinding>(), RobotLifecycleCallbacks {
 
-    private lateinit var binding: ActivityChatLocaleTutorialBinding
-
+    override fun inflateBinding(): ActivityChatLocaleTutorialBinding {
+        return ActivityChatLocaleTutorialBinding.inflate(layoutInflater)
+    }
     private var conversationBinder: ConversationBinder? = null
 
     // Store the Chat actions.
@@ -49,9 +51,6 @@ class ChatLocaleTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        binding = ActivityChatLocaleTutorialBinding.inflate(layoutInflater)
-        setContentView(binding.root)
 
         // Change the locale to English when checked.
         binding.enButton.setOnCheckedChangeListener { _, isChecked ->
@@ -87,8 +86,6 @@ class ChatLocaleTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks {
         QiSDK.unregister(this, this)
         super.onDestroy()
     }
-
-    override val layoutId = R.layout.activity_chat_locale_tutorial
 
     override fun onRobotFocusGained(qiContext: QiContext) {
         // Bind the conversational events to the view.

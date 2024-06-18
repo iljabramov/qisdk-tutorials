@@ -11,7 +11,7 @@ import androidx.annotation.LayoutRes
 import androidx.recyclerview.widget.RecyclerView
 import com.softbankrobotics.qisdktutorials.R
 import com.softbankrobotics.qisdktutorials.databinding.LayoutInfoLogViewBinding
-
+import kotlin.collections.mutableListOf
 private const val INFO_LOG_VIEW_TYPE = 0
 private const val ERROR_LOG_VIEW_TYPE = 1
 private const val ROBOT_OUTPUT_VIEW_TYPE = 2
@@ -37,17 +37,18 @@ internal class ConversationAdapter : RecyclerView.Adapter<ConversationViewHolder
 
     override fun getItemCount() = items.size
 
+
     override fun getItemViewType(position: Int): Int {
         val conversationItem = items[position]
-        return when (val type = conversationItem.type) {
-            ConversationItemType.INFO_LOG -> INFO_LOG_VIEW_TYPE
-            ConversationItemType.ERROR_LOG -> ERROR_LOG_VIEW_TYPE
-            ConversationItemType.HUMAN_INPUT -> HUMAN_INPUT_VIEW_TYPE
-            ConversationItemType.ROBOT_OUTPUT -> ROBOT_OUTPUT_VIEW_TYPE
+        val type = conversationItem.type.name
+        return when (type) {
+            ConversationItemType.INFO_LOG.name -> INFO_LOG_VIEW_TYPE
+            ConversationItemType.ERROR_LOG.name -> ERROR_LOG_VIEW_TYPE
+            ConversationItemType.HUMAN_INPUT.name -> HUMAN_INPUT_VIEW_TYPE
+            ConversationItemType.ROBOT_OUTPUT.name -> ROBOT_OUTPUT_VIEW_TYPE
             else -> throw IllegalArgumentException("Unknown conversation item type: $type")
         }
     }
-
     /**
      * Add an item to the view.
      * @param text the item text

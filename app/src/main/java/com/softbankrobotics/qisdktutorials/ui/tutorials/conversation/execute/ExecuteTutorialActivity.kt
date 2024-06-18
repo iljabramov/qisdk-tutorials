@@ -22,6 +22,7 @@ import com.aldebaran.qi.sdk.`object`.conversation.BaseQiChatExecutor
 import com.aldebaran.qi.sdk.`object`.conversation.Chat
 import com.aldebaran.qi.sdk.`object`.conversation.QiChatExecutor
 import com.softbankrobotics.qisdktutorials.R
+import com.softbankrobotics.qisdktutorials.databinding.ActivityAutonomousAbilitiesTutorialBinding
 import com.softbankrobotics.qisdktutorials.databinding.ConversationLayoutBinding
 import com.softbankrobotics.qisdktutorials.ui.conversation.ConversationBinder
 import com.softbankrobotics.qisdktutorials.ui.conversation.ConversationItemType
@@ -32,19 +33,17 @@ private const val TAG = "ExecuteTutorialActivity"
 /**
  * The activity for the Execute tutorial.
  */
-class ExecuteTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks {
+class ExecuteTutorialActivity : TutorialActivity<ConversationLayoutBinding>(), RobotLifecycleCallbacks {
 
-    private lateinit var binding: ConversationLayoutBinding
+    override fun inflateBinding(): ConversationLayoutBinding {
+        return ConversationLayoutBinding.inflate(layoutInflater)
+    }
 
     private lateinit var conversationBinder: ConversationBinder
     private lateinit var chat: Chat
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        binding = ConversationLayoutBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-
         // Register the RobotLifecycleCallbacks to this Activity.
         QiSDK.register(this, this)
     }
@@ -99,8 +98,6 @@ class ExecuteTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks {
     override fun onRobotFocusRefused(reason: String) {
         // Nothing here.
     }
-
-    override val layoutId = R.layout.conversation_layout
 
     private fun displayLine(text: String, type: ConversationItemType) {
         runOnUiThread { binding.conversationView.addLine(text, type) }

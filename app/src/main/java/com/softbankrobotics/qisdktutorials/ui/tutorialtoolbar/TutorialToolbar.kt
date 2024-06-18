@@ -17,7 +17,7 @@ import com.softbankrobotics.qisdktutorials.model.data.TutorialLevel
 
 class TutorialToolbar (context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : Toolbar(context, attrs, defStyleAttr) {
 
-    lateinit var binding: TutorialToolbarBinding
+    var binding: TutorialToolbarBinding
 
     init {
 //        View.inflate(context, R.layout.tutorial_toolbar, this)

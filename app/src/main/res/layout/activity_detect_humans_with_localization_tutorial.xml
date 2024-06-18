@@ -6,14 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".ui.tutorials.perceptions.detecthumanswithlocalization.DetectHumansWithLocalizationTutorialActivity">
 
-    <com.softbankrobotics.qisdktutorials.ui.tutorialtoolbar.TutorialToolbar
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <com.softbankrobotics.qisdktutorials.ui.conversation.ConversationView
         android:id="@+id/conversation_view"
         style="@style/RecyclerView"
@@ -27,7 +19,6 @@
         android:paddingStart="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar" />
+        app:layout_constraintStart_toStartOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

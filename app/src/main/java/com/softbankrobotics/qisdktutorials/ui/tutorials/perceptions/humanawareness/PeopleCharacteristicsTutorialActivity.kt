@@ -31,10 +31,10 @@ private const val TAG = "CharacteristicsActivity"
 /**
  * The activity for the People characteristics tutorial.
  */
-class PeopleCharacteristicsTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks {
-
-    private lateinit var binding: ActivityPeopleCharacteristicsTutorialBinding
-
+class PeopleCharacteristicsTutorialActivity : TutorialActivity<ActivityPeopleCharacteristicsTutorialBinding>(), RobotLifecycleCallbacks {
+    override fun inflateBinding(): ActivityPeopleCharacteristicsTutorialBinding {
+        return ActivityPeopleCharacteristicsTutorialBinding.inflate(layoutInflater)
+    }
     private lateinit var conversationBinder: ConversationBinder
 
     private lateinit var humanInfoAdapter: HumanInfoAdapter
@@ -49,9 +49,6 @@ class PeopleCharacteristicsTutorialActivity : TutorialActivity(), RobotLifecycle
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        binding = ActivityPeopleCharacteristicsTutorialBinding.inflate(layoutInflater)
-        setContentView(binding.root)
 
         val layoutManager = LinearLayoutManager(this)
         binding.recyclerView.layoutManager = layoutManager
@@ -78,8 +75,6 @@ class PeopleCharacteristicsTutorialActivity : TutorialActivity(), RobotLifecycle
         QiSDK.unregister(this, this)
         super.onDestroy()
     }
-
-    override val layoutId = R.layout.activity_people_characteristics_tutorial
 
     override fun onRobotFocusGained(qiContext: QiContext) {
         // Store the provided QiContext.

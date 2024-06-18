@@ -6,14 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".ui.tutorials.motion.extendmap.MapExtensionTutorialActivity">
 
-    <com.softbankrobotics.qisdktutorials.ui.tutorialtoolbar.TutorialToolbar
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
-
     <com.softbankrobotics.qisdktutorials.ui.conversation.ConversationView
         style="@style/RecyclerView"
         android:id="@+id/conversation_view"
@@ -26,7 +18,6 @@
         app:layout_constraintBottom_toTopOf="@+id/startMappingButton"
         app:layout_constraintEnd_toStartOf="@+id/mapImageView"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar"
         android:paddingStart="8dp"
         android:paddingEnd="8dp"/>
 
@@ -40,8 +31,7 @@
         android:layout_marginEnd="@dimen/activity_horizontal_margin"
         app:layout_constraintBottom_toTopOf="@+id/startMappingButton"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/conversation_view"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar"/>
+        app:layout_constraintStart_toEndOf="@+id/conversation_view" />
 
     <Button
         style="@style/Button"

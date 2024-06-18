@@ -24,6 +24,7 @@ import com.aldebaran.qi.sdk.`object`.conversation.BookmarkStatus
 import com.aldebaran.qi.sdk.`object`.conversation.Chat
 import com.aldebaran.qi.sdk.`object`.conversation.QiChatbot
 import com.softbankrobotics.qisdktutorials.R
+import com.softbankrobotics.qisdktutorials.databinding.ActivityAutonomousAbilitiesTutorialBinding
 import com.softbankrobotics.qisdktutorials.databinding.ConversationLayoutBinding
 import com.softbankrobotics.qisdktutorials.ui.conversation.ConversationBinder
 import com.softbankrobotics.qisdktutorials.ui.conversation.ConversationItemType
@@ -34,10 +35,11 @@ private const val TAG = "BookmarksActivity"
 /**
  * The activity for the Bookmarks tutorial.
  */
-class BookmarksTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks {
+class BookmarksTutorialActivity : TutorialActivity<ConversationLayoutBinding>(), RobotLifecycleCallbacks {
 
-    private lateinit var binding: ConversationLayoutBinding
-
+    override fun inflateBinding(): ConversationLayoutBinding {
+        return ConversationLayoutBinding.inflate(layoutInflater)
+    }
     private lateinit var conversationBinder: ConversationBinder
     private var mediaPlayer: MediaPlayer? = null
 
@@ -57,9 +59,6 @@ class BookmarksTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        binding = ConversationLayoutBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-
         // Register the RobotLifecycleCallbacks to this Activity.
         QiSDK.register(this, this)
     }
@@ -77,8 +76,6 @@ class BookmarksTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks {
         QiSDK.unregister(this, this)
         super.onDestroy()
     }
-
-    override val layoutId = R.layout.conversation_layout
 
     override fun onRobotFocusGained(qiContext: QiContext) {
         // Bind the conversational events to the view.

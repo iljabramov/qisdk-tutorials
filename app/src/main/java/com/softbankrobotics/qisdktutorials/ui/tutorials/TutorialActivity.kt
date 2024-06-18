@@ -4,47 +4,55 @@
  */
 
 package com.softbankrobotics.qisdktutorials.ui.tutorials
-
 import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.view.ViewTreeObserver
+import android.widget.FrameLayout
 import android.widget.ImageView
-import androidx.annotation.LayoutRes
 import com.aldebaran.qi.sdk.design.activity.RobotActivity
 import com.softbankrobotics.qisdktutorials.R
-import com.softbankrobotics.qisdktutorials.databinding.ActivityTakePictureTutorialBinding
+import androidx.viewbinding.ViewBinding
 import com.softbankrobotics.qisdktutorials.model.data.TutorialLevel
+import com.softbankrobotics.qisdktutorials.ui.tutorialtoolbar.TutorialToolbar
 import com.softbankrobotics.qisdktutorials.utils.Constants
 
 /**
  * Base class for a tutorial activity.
  */
+
 private const val TAG = "TutorialActivity"
 
-abstract class TutorialActivity : RobotActivity() {
+abstract class TutorialActivity<VB : ViewBinding> : RobotActivity() {
 
-    private lateinit var binding: ActivityTakePictureTutorialBinding
+    private var _binding: VB? = null
+    protected val binding get() = _binding!!
 
+    private lateinit var toolbar: TutorialToolbar
     private lateinit var rootView: View
+
     private var globalLayoutListener: ViewTreeObserver.OnGlobalLayoutListener? = null
 
-    /**
-     * Provide the tutorial layout identifier.
-     * @return The layout identifier.
-     */
-    @get:LayoutRes
-    protected abstract val layoutId: Int
+
+    abstract fun inflateBinding(): VB
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityTakePictureTutorialBinding.inflate(layoutInflater)
+        setContentView(R.layout.activity_base_tutorial)
 
-        val view = binding.root
-        setContentView(view)
+        toolbar = findViewById(R.id.toolbar)
         setupToolbar()
+
+        _binding = inflateBinding()
+        val contentFrame = findViewById<FrameLayout>(R.id.content_frame)
+        contentFrame.addView(binding.root)
+    }
+
+    override fun onPause() {
+        rootView.viewTreeObserver?.removeOnGlobalLayoutListener(globalLayoutListener)
+        super.onPause()
     }
 
     override fun onResume() {
@@ -65,18 +73,15 @@ abstract class TutorialActivity : RobotActivity() {
         rootView.viewTreeObserver?.addOnGlobalLayoutListener(globalLayoutListener)
     }
 
-    override fun onPause() {
-        rootView.viewTreeObserver?.removeOnGlobalLayoutListener(globalLayoutListener)
-        super.onPause()
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
     }
 
-    /**
-     * Configures the toolbar.
-     */
     private fun setupToolbar() {
-        setSupportActionBar(binding.toolbar)
+        setSupportActionBar(toolbar)
 
-        binding.toolbar.findViewById<ImageView>(R.id.back_arrow).setOnClickListener {
+        toolbar.findViewById<ImageView>(R.id.back_arrow).setOnClickListener {
             Log.d(TAG, "Back arrow clicked")
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S_V2) {
                 onBackPressed()
@@ -96,8 +101,8 @@ abstract class TutorialActivity : RobotActivity() {
                 TutorialLevel::class.java
             ) as TutorialLevel
             if (nameResId != nameNotFound) {
-                binding.toolbar.setName(nameResId)
-                binding.toolbar.setLevel(level)
+                toolbar.setName(nameResId)
+                toolbar.setLevel(level)
             }
         } else {
             level =
@@ -105,11 +110,11 @@ abstract class TutorialActivity : RobotActivity() {
         }
 
         if (nameResId != nameNotFound) {
-            binding.toolbar.setName(nameResId)
-            binding.toolbar.setLevel(level)
+            toolbar.setName(nameResId)
+            toolbar.setLevel(level)
         }
 
-        binding.toolbar.findViewById<ImageView>(R.id.close_button).setOnClickListener {
+        toolbar.findViewById<ImageView>(R.id.close_button).setOnClickListener {
             Log.d(TAG, "Close button clicked")
             finishAffinity()
         }
@@ -130,3 +135,7 @@ abstract class TutorialActivity : RobotActivity() {
         }
     }
 }
+
+
+
+

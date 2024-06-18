@@ -28,10 +28,10 @@ private const val TAG = "QiChatbotActivity"
 /**
  * The activity for the QiChatbot tutorial.
  */
-class QiChatbotTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks {
-
-    private lateinit var binding: ConversationLayoutBinding
-
+class QiChatbotTutorialActivity : TutorialActivity<ConversationLayoutBinding>(), RobotLifecycleCallbacks {
+    override fun inflateBinding(): ConversationLayoutBinding {
+        return ConversationLayoutBinding.inflate(layoutInflater)
+    }
     private var conversationBinder: ConversationBinder? = null
 
     // Store the Chat action.
@@ -39,10 +39,6 @@ class QiChatbotTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        binding = ConversationLayoutBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-
         // Register the RobotLifecycleCallbacks to this Activity.
         QiSDK.register(this, this)
     }
@@ -52,8 +48,6 @@ class QiChatbotTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks {
         QiSDK.unregister(this, this)
         super.onDestroy()
     }
-
-    override val layoutId = R.layout.conversation_layout
 
     override fun onRobotFocusGained(qiContext: QiContext) {
         // Bind the conversational events to the view.

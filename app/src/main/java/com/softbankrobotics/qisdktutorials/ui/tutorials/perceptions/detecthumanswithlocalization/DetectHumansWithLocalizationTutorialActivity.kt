@@ -25,10 +25,11 @@ private const val TAG = "DetectHumansWithLoc"
 /**
  * The activity for detecting humans with localization.
  */
-class DetectHumansWithLocalizationTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks {
+class DetectHumansWithLocalizationTutorialActivity : TutorialActivity<ActivityAutonomousAbilitiesTutorialBinding>(), RobotLifecycleCallbacks {
 
-    private lateinit var binding: ActivityAutonomousAbilitiesTutorialBinding
-
+    override fun inflateBinding(): ActivityAutonomousAbilitiesTutorialBinding {
+        return ActivityAutonomousAbilitiesTutorialBinding.inflate(layoutInflater)
+    }
     private lateinit var conversationBinder: ConversationBinder
 
     // Store the LocalizeAndMap action.
@@ -46,9 +47,6 @@ class DetectHumansWithLocalizationTutorialActivity : TutorialActivity(), RobotLi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        binding = ActivityAutonomousAbilitiesTutorialBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-
         // Register the RobotLifecycleCallbacks to this Activity.
         QiSDK.register(this, this)
     }
@@ -58,9 +56,6 @@ class DetectHumansWithLocalizationTutorialActivity : TutorialActivity(), RobotLi
         QiSDK.unregister(this, this)
         super.onDestroy()
     }
-
-    override val layoutId = R.layout.activity_detect_humans_with_localization_tutorial
-
     override fun onRobotFocusGained(qiContext: QiContext) {
         // Bind the conversational events to the view.
         val conversationStatus = qiContext.conversation.status(qiContext.robotContext)

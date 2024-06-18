@@ -16,6 +16,8 @@ import com.aldebaran.qi.sdk.builder.AnimationBuilder
 import com.aldebaran.qi.sdk.builder.SayBuilder
 import com.aldebaran.qi.sdk.`object`.actuation.Animate
 import com.softbankrobotics.qisdktutorials.R
+import com.softbankrobotics.qisdktutorials.databinding.ActivityAutonomousAbilitiesTutorialBinding
+import com.softbankrobotics.qisdktutorials.databinding.ConversationLayoutBinding
 import com.softbankrobotics.qisdktutorials.ui.conversation.ConversationBinder
 import com.softbankrobotics.qisdktutorials.ui.conversation.ConversationItemType
 import com.softbankrobotics.qisdktutorials.ui.conversation.ConversationView
@@ -24,8 +26,10 @@ import com.softbankrobotics.qisdktutorials.utils.Constants
 
 private const val TAG = "AnimationLabelActivity"
 
-class AnimationLabelActivity : TutorialActivity(), RobotLifecycleCallbacks {
-
+class AnimationLabelActivity : TutorialActivity<ConversationLayoutBinding>(), RobotLifecycleCallbacks {
+    override fun inflateBinding(): ConversationLayoutBinding {
+        return ConversationLayoutBinding.inflate(layoutInflater)
+    }
     private lateinit var conversationView: ConversationView
     private var conversationBinder: ConversationBinder? = null
 
@@ -46,8 +50,6 @@ class AnimationLabelActivity : TutorialActivity(), RobotLifecycleCallbacks {
         QiSDK.unregister(this, this)
         super.onDestroy()
     }
-
-    override val layoutId = R.layout.conversation_layout
 
     override fun onRobotFocusGained(qiContext: QiContext) {
         // Bind the conversational events to the view.

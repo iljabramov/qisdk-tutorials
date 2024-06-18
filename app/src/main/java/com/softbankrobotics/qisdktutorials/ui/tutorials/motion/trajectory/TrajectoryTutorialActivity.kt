@@ -27,10 +27,10 @@ private const val TAG = "TrajectoryActivity"
 /**
  * The activity for the Animate tutorial (trajectory).
  */
-class TrajectoryTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks {
-
-    private lateinit var binding: ActivityAutonomousAbilitiesTutorialBinding
-
+class TrajectoryTutorialActivity : TutorialActivity<ActivityAutonomousAbilitiesTutorialBinding>(), RobotLifecycleCallbacks {
+    override fun inflateBinding(): ActivityAutonomousAbilitiesTutorialBinding {
+        return ActivityAutonomousAbilitiesTutorialBinding.inflate(layoutInflater)
+    }
     private var conversationBinder: ConversationBinder? = null
 
     // Store the Animate action.
@@ -38,10 +38,6 @@ class TrajectoryTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        binding = ActivityAutonomousAbilitiesTutorialBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-
         // Register the RobotLifecycleCallbacks to this Activity.
         QiSDK.register(this, this)
     }
@@ -52,7 +48,6 @@ class TrajectoryTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks {
         super.onDestroy()
     }
 
-    override val layoutId = R.layout.conversation_layout
 
     override fun onRobotFocusGained(qiContext: QiContext) {
         // Bind the conversational events to the view.

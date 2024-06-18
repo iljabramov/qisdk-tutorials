@@ -21,6 +21,7 @@ import com.aldebaran.qi.sdk.`object`.conversation.Bookmark
 import com.aldebaran.qi.sdk.`object`.conversation.QiChatVariable
 import com.aldebaran.qi.sdk.`object`.conversation.QiChatbot
 import com.softbankrobotics.qisdktutorials.R
+import com.softbankrobotics.qisdktutorials.databinding.ActivityAutonomousAbilitiesTutorialBinding
 import com.softbankrobotics.qisdktutorials.databinding.ActivityQiChatVariablesTutorialBinding
 import com.softbankrobotics.qisdktutorials.ui.conversation.ConversationBinder
 import com.softbankrobotics.qisdktutorials.ui.tutorials.TutorialActivity
@@ -30,10 +31,11 @@ import com.softbankrobotics.qisdktutorials.utils.KeyboardUtils
 /**
  * The activity for the QiChatVariables tutorial.
  */
-class QiChatVariablesTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks {
+class QiChatVariablesTutorialActivity : TutorialActivity<ActivityQiChatVariablesTutorialBinding>(), RobotLifecycleCallbacks {
 
-    private lateinit var binding: ActivityQiChatVariablesTutorialBinding
-
+    override fun inflateBinding(): ActivityQiChatVariablesTutorialBinding {
+        return ActivityQiChatVariablesTutorialBinding.inflate(layoutInflater)
+    }
     private lateinit var conversationBinder: ConversationBinder
 
     // Store the qiVariable.
@@ -47,9 +49,6 @@ class QiChatVariablesTutorialActivity : TutorialActivity(), RobotLifecycleCallba
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        binding = ActivityQiChatVariablesTutorialBinding.inflate(layoutInflater)
-        setContentView(binding.root)
 
         binding.variableEditText.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
@@ -70,8 +69,6 @@ class QiChatVariablesTutorialActivity : TutorialActivity(), RobotLifecycleCallba
         QiSDK.unregister(this, this)
         super.onDestroy()
     }
-
-    override val layoutId = R.layout.activity_qi_chat_variables_tutorial
 
     override fun onRobotFocusGained(qiContext: QiContext) {
         // Bind the conversational events to the view.

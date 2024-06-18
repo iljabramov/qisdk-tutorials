@@ -18,6 +18,7 @@ import com.aldebaran.qi.sdk.builder.TransformBuilder
 import com.aldebaran.qi.sdk.`object`.actuation.LookAt
 import com.aldebaran.qi.sdk.`object`.actuation.LookAtMovementPolicy
 import com.softbankrobotics.qisdktutorials.R
+import com.softbankrobotics.qisdktutorials.databinding.ActivityAutonomousAbilitiesTutorialBinding
 import com.softbankrobotics.qisdktutorials.databinding.ActivityLookAtTutorialBinding
 import com.softbankrobotics.qisdktutorials.ui.conversation.ConversationBinder
 import com.softbankrobotics.qisdktutorials.ui.conversation.ConversationItemType
@@ -29,9 +30,10 @@ private const val TAG = "LookAtTutorialActivity"
 /**
  * The activity for the LookAt tutorial.
  */
-class LookAtTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks {
-
-    private lateinit var binding: ActivityLookAtTutorialBinding
+class LookAtTutorialActivity : TutorialActivity<ActivityLookAtTutorialBinding>(), RobotLifecycleCallbacks {
+    override fun inflateBinding(): ActivityLookAtTutorialBinding {
+        return ActivityLookAtTutorialBinding.inflate(layoutInflater)
+    }
 
     private var conversationBinder: ConversationBinder? = null
 
@@ -43,9 +45,6 @@ class LookAtTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        binding = ActivityLookAtTutorialBinding.inflate(layoutInflater)
-        setContentView(binding.root)
 
         // Set the button onClick listener.
         binding.cancelButton.setOnClickListener {
@@ -61,9 +60,6 @@ class LookAtTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks {
         QiSDK.unregister(this, this)
         super.onDestroy()
     }
-
-    override val layoutId = R.layout.activity_look_at_tutorial
-
     override fun onRobotFocusGained(qiContext: QiContext) {
         // Bind the conversational events to the view.
         val conversationStatus = qiContext.conversation.status(qiContext.robotContext)

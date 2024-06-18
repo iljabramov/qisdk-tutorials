@@ -17,6 +17,7 @@ import com.aldebaran.qi.sdk.builder.AnimationBuilder
 import com.aldebaran.qi.sdk.builder.SayBuilder
 import com.aldebaran.qi.sdk.`object`.actuation.Animate
 import com.softbankrobotics.qisdktutorials.R
+import com.softbankrobotics.qisdktutorials.databinding.ActivityAutonomousAbilitiesTutorialBinding
 import com.softbankrobotics.qisdktutorials.databinding.ConversationLayoutBinding
 import com.softbankrobotics.qisdktutorials.ui.conversation.ConversationBinder
 import com.softbankrobotics.qisdktutorials.ui.conversation.ConversationItemType
@@ -28,9 +29,10 @@ private const val TAG = "AnimateTutorialActivity"
 /**
  * The activity for the Animate tutorial (animation).
  */
-class AnimateTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks {
-
-    private lateinit var binding: ConversationLayoutBinding
+class AnimateTutorialActivity : TutorialActivity<ConversationLayoutBinding>(), RobotLifecycleCallbacks {
+    override fun inflateBinding(): ConversationLayoutBinding {
+        return ConversationLayoutBinding.inflate(layoutInflater)
+    }
 
     private var conversationBinder: ConversationBinder? = null
     private var mediaPlayer: MediaPlayer? = null
@@ -40,9 +42,6 @@ class AnimateTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        binding = ConversationLayoutBinding.inflate(layoutInflater)
-        setContentView(binding.root)
 
         // Register the RobotLifecycleCallbacks to this Activity.
         QiSDK.register(this, this)
@@ -64,9 +63,7 @@ class AnimateTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks {
         QiSDK.unregister(this, this)
         super.onDestroy()
     }
-
-    override val layoutId = R.layout.conversation_layout
-
+    
     override fun onRobotFocusGained(qiContext: QiContext) {
         // Bind the conversational events to the view.
         val conversationStatus = qiContext.conversation.status(qiContext.robotContext)

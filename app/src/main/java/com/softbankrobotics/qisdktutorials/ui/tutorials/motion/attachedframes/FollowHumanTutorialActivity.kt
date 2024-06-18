@@ -20,6 +20,7 @@ import com.aldebaran.qi.sdk.`object`.actuation.GoTo
 import com.aldebaran.qi.sdk.`object`.human.Human
 import com.aldebaran.qi.sdk.util.FutureUtils
 import com.softbankrobotics.qisdktutorials.R
+import com.softbankrobotics.qisdktutorials.databinding.ActivityAutonomousAbilitiesTutorialBinding
 import com.softbankrobotics.qisdktutorials.databinding.ActivityFollowHumanTutorialBinding
 import com.softbankrobotics.qisdktutorials.ui.conversation.ConversationBinder
 import com.softbankrobotics.qisdktutorials.ui.conversation.ConversationItemType
@@ -31,10 +32,11 @@ import kotlin.math.sqrt
 
 private const val TAG = "FollowHumanActivity"
 
-class FollowHumanTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks {
+class FollowHumanTutorialActivity : TutorialActivity<ActivityFollowHumanTutorialBinding>(), RobotLifecycleCallbacks {
 
-    private lateinit var binding: ActivityFollowHumanTutorialBinding
-
+    override fun inflateBinding(): ActivityFollowHumanTutorialBinding {
+        return ActivityFollowHumanTutorialBinding.inflate(layoutInflater)
+    }
     private var conversationBinder: ConversationBinder? = null
 
     // The QiContext provided by the QiSDK.
@@ -48,10 +50,6 @@ class FollowHumanTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        binding = ActivityFollowHumanTutorialBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-
         // Search humans on follow button clicked.
         binding.followButton.setOnClickListener {
             if (qiContext != null) {
@@ -79,8 +77,6 @@ class FollowHumanTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks 
 
         super.onDestroy()
     }
-
-    override val layoutId = R.layout.activity_follow_human_tutorial
 
     override fun onRobotFocusGained(qiContext: QiContext) {
         Log.i(TAG, "Focus gained.")
