@@ -173,7 +173,7 @@ internal class PepperChatbot(context: QiContext?) : BaseChatbot(context) {
 internal class Advisor {
     fun answerQuestion(question: String): String {
         val apiKey = "apikey"
-        val endpoint = "https://api.openai.com/v1/completions"
+        val endpoint = "https://api.openai.com/v1/chat/completions"
         val client = OkHttpClient()
 
         val jsonMediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
