@@ -18,6 +18,7 @@ import com.softbankrobotics.qisdktutorials.ui.tutorials.conversation.chatlocale.
 import com.softbankrobotics.qisdktutorials.ui.tutorials.conversation.dynamicconcepts.DynamicConceptsTutorialActivity
 import com.softbankrobotics.qisdktutorials.ui.tutorials.conversation.execute.ExecuteTutorialActivity
 import com.softbankrobotics.qisdktutorials.ui.tutorials.conversation.listen.ListenTutorialActivity
+import com.softbankrobotics.qisdktutorials.ui.tutorials.conversation.mychatbot.MyChatbotTutorialActivity
 import com.softbankrobotics.qisdktutorials.ui.tutorials.conversation.qichatbot.QiChatbotTutorialActivity
 import com.softbankrobotics.qisdktutorials.ui.tutorials.conversation.qichatvariables.QiChatVariablesTutorialActivity
 import com.softbankrobotics.qisdktutorials.ui.tutorials.gettingstarted.HelloHumanTutorialActivity
@@ -60,6 +61,7 @@ internal class CategoriesRouter : CategoriesContract.Router {
     private fun getDestinationActivity(tutorialId: TutorialId): Class<out TutorialActivity<*>> {
         Log.i(TAG, "tutorialId: $tutorialId")
         return when (tutorialId) {
+            TutorialId.MYCHATBOT -> MyChatbotTutorialActivity::class.java
             TutorialId.SAY -> HelloHumanTutorialActivity::class.java
             TutorialId.QICHATBOT -> QiChatbotTutorialActivity::class.java
             TutorialId.LISTEN -> ListenTutorialActivity::class.java

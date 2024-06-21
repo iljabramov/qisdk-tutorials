@@ -19,6 +19,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.categories.CategoriesActivity" />
+        <activity android:name=".ui.tutorials.conversation.mychatbot.MyChatbotTutorialActivity"/>
         <activity android:name=".ui.tutorials.autonomousabilities.AutonomousAbilitiesTutorialActivity" />
         <activity android:name=".ui.tutorials.conversation.bookmarks.BookmarksTutorialActivity" />
         <activity android:name=".ui.tutorials.conversation.dynamicconcepts.DynamicConceptsTutorialActivity" />
