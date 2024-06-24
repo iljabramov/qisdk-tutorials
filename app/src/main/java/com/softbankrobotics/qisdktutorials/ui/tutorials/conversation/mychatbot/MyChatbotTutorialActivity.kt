@@ -119,23 +119,22 @@ class MyChatbotTutorialActivity : TutorialActivity<ConversationLayoutBinding>(),
 }
 
 internal class PepperChatbot(context: QiContext?) : BaseChatbot(context) {
+    private val messages = mutableListOf(
+        Pair("system", "You are a helpful assistant."),
+    ) // To store past messages
 
     override fun replyTo(phrase: Phrase, locale: Locale): StandardReplyReaction {
         Log.e(TAG, phrase.text)
-        val ans = gpt.answerQuestion(phrase.text)
+        messages.add(Pair("user", phrase.text))
+        val ans = Advisor().answerQuestion(messages)
         Log.e(TAG, ans)
-        return if (phrase.text !== "") {
-            StandardReplyReaction(
-                MyChatbotReaction(qiContext, ans),
-                ReplyPriority.NORMAL
-            )
-        } else {
-            StandardReplyReaction(
-                MyChatbotReaction(qiContext, "I can just greet you"),
-                ReplyPriority.FALLBACK
-            )
-        }
+        messages.add(Pair("assistant", ans))
+        return StandardReplyReaction(
+            MyChatbotReaction(qiContext, ans),
+            ReplyPriority.NORMAL
+        )
     }
+
 
 
     internal inner class MyChatbotReaction(context: QiContext?, private val answer: String) :
@@ -171,25 +170,30 @@ internal class PepperChatbot(context: QiContext?) : BaseChatbot(context) {
 }
 
 internal class Advisor {
-    fun answerQuestion(question: String): String {
-        val apiKey = "apikey"
+    fun answerQuestion(messages: List<Pair<String, String>>): String {
+        val apiKey = "sk-proj"
         val endpoint = "https://api.openai.com/v1/chat/completions"
         val client = OkHttpClient()
 
         val jsonMediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
-        val requestBody = """{
-        "model": "gpt-3.5-turbo",
-        "messages": [
-        {
-            "role": "system",
-            "content": "You are a helpful assistant."
-        },
-        {
-            "role": "user",
-            "content": "$question"
+
+        // Build past messages JSON array
+        val messagesArray = messages.joinToString(",") { (role, content) ->
+            """
+            {
+                "role": "$role",
+                "content": "$content"
+            }
+            """.trimIndent()
         }
-        ]
-    }""".trimIndent().toRequestBody(jsonMediaType)
+
+        // Construct the request body with past messages and the current question
+        val requestBody = """{
+            "model": "gpt-3.5-turbo",
+            "messages": [
+                $messagesArray
+            ]
+        }""".trimIndent().toRequestBody(jsonMediaType)
 
         val request = Request.Builder()
             .url(endpoint)
@@ -205,7 +209,7 @@ internal class Advisor {
             Log.e(TAG, "Response Code: ${response.code}")
             val answer = response.body?.string()
             Log.e(TAG, "Response: $answer")
-            return answer!!
+            return answer ?: "Error: No Answer was given"
         }
     }
 }
