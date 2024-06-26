@@ -1,5 +1,8 @@
-apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
+plugins {
+    id 'com.android.application'
+    id 'kotlin-android'
+    id 'kotlinx-serialization'
+}
 
 android {
     namespace 'com.softbankrobotics.qisdktutorials'
@@ -48,5 +51,8 @@ dependencies {
     implementation('com.crashlytics.sdk.android:crashlytics:2.9.4@aar') { transitive = true }
     // HTTP
     implementation("com.squareup.okhttp3:okhttp:4.9.3")
-
+    // JSON
+    implementation('org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.1')
 }
+
+

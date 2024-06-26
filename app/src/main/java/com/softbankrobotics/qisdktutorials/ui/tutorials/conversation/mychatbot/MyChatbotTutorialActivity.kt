@@ -7,31 +7,17 @@ package com.softbankrobotics.qisdktutorials.ui.tutorials.conversation.mychatbot
 
 import android.os.Bundle
 import android.util.Log
-import com.aldebaran.qi.Future
 import com.aldebaran.qi.sdk.QiContext
 import com.aldebaran.qi.sdk.QiSDK
 import com.aldebaran.qi.sdk.RobotLifecycleCallbacks
 import com.aldebaran.qi.sdk.builder.ChatBuilder
 import com.aldebaran.qi.sdk.builder.SayBuilder
-import com.aldebaran.qi.sdk.`object`.conversation.BaseChatbot
-import com.aldebaran.qi.sdk.`object`.conversation.BaseChatbotReaction
 import com.aldebaran.qi.sdk.`object`.conversation.Chat
-import com.aldebaran.qi.sdk.`object`.conversation.Phrase
-import com.aldebaran.qi.sdk.`object`.conversation.ReplyPriority
-import com.aldebaran.qi.sdk.`object`.conversation.SpeechEngine
-import com.aldebaran.qi.sdk.`object`.conversation.StandardReplyReaction
-import com.aldebaran.qi.sdk.`object`.locale.Locale
 import com.softbankrobotics.qisdktutorials.databinding.ConversationLayoutBinding
 import com.softbankrobotics.qisdktutorials.ui.conversation.ConversationBinder
 import com.softbankrobotics.qisdktutorials.ui.conversation.ConversationItemType
 import com.softbankrobotics.qisdktutorials.ui.tutorials.TutorialActivity
 import com.softbankrobotics.qisdktutorials.utils.Constants
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.RequestBody.Companion.toRequestBody
-import java.util.concurrent.CancellationException
-import java.util.concurrent.ExecutionException
 
 
 private const val TAG = "QiChatbotActivity"
@@ -117,100 +103,3 @@ class MyChatbotTutorialActivity : TutorialActivity<ConversationLayoutBinding>(),
         runOnUiThread { binding.conversationView.addLine(text, type) }
     }
 }
-
-internal class PepperChatbot(context: QiContext?) : BaseChatbot(context) {
-    private val messages = mutableListOf(
-        Pair("system", "You are a helpful assistant."),
-    ) // To store past messages
-
-    override fun replyTo(phrase: Phrase, locale: Locale): StandardReplyReaction {
-        Log.e(TAG, phrase.text)
-        messages.add(Pair("user", phrase.text))
-        val ans = Advisor().answerQuestion(messages)
-        Log.e(TAG, ans)
-        messages.add(Pair("assistant", ans))
-        return StandardReplyReaction(
-            MyChatbotReaction(qiContext, ans),
-            ReplyPriority.NORMAL
-        )
-    }
-
-
-
-    internal inner class MyChatbotReaction(context: QiContext?, private val answer: String) :
-        BaseChatbotReaction(context) {
-        private var fSay: Future<Void>? = null
-
-        override fun runWith(speechEngine: SpeechEngine) {
-            val say = SayBuilder.with(speechEngine)
-                .withText(answer)
-                .withLocale(Constants.Locals.ENGLISH_LOCALE)
-                .build()
-            fSay = say.async().run()
-
-            try {
-                fSay!!.get() // Do not leave the method before the actions are done
-            } catch (e: ExecutionException) {
-                Log.e(TAG, "Error during Say", e)
-            } catch (e: CancellationException) {
-                Log.i(TAG, "Interruption during Say")
-            }
-        }
-
-        override fun stop() {
-            if (fSay != null) {
-                fSay!!.cancel(true)
-            }
-        }
-    }
-
-    companion object {
-        private val gpt = Advisor()
-    }
-}
-
-internal class Advisor {
-    fun answerQuestion(messages: List<Pair<String, String>>): String {
-        val apiKey = "sk-proj"
-        val endpoint = "https://api.openai.com/v1/chat/completions"
-        val client = OkHttpClient()
-
-        val jsonMediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
-
-        // Build past messages JSON array
-        val messagesArray = messages.joinToString(",") { (role, content) ->
-            """
-            {
-                "role": "$role",
-                "content": "$content"
-            }
-            """.trimIndent()
-        }
-
-        // Construct the request body with past messages and the current question
-        val requestBody = """{
-            "model": "gpt-3.5-turbo",
-            "messages": [
-                $messagesArray
-            ]
-        }""".trimIndent().toRequestBody(jsonMediaType)
-
-        val request = Request.Builder()
-            .url(endpoint)
-            .post(requestBody)
-            .addHeader("Authorization", "Bearer $apiKey")
-            .addHeader("Content-Type", "application/json")
-            .build()
-
-        client.newCall(request).execute().use { response ->
-            if (!response.isSuccessful) {
-                Log.e(TAG, "Unexpected code $response")
-            }
-            Log.e(TAG, "Response Code: ${response.code}")
-            val answer = response.body?.string()
-            Log.e(TAG, "Response: $answer")
-            return answer ?: "Error: No Answer was given"
-        }
-    }
-}
-
