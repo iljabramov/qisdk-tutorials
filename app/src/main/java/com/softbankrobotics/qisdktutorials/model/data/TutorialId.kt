@@ -11,6 +11,7 @@ package com.softbankrobotics.qisdktutorials.model.data
 enum class TutorialId {
     SAY,
     QICHATBOT,
+    MYCHATBOT,
     LISTEN,
     ANIMATION,
     GOTO,

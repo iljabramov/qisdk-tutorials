@@ -44,6 +44,7 @@ class TutorialRepository {
             TutorialLevel.BASIC -> {
                 tutorials.add(Tutorial(TutorialId.SAY, R.string.hello_human, "hello", TutorialLevel.BASIC))
                 tutorials.add(Tutorial(TutorialId.QICHATBOT, R.string.qichatbot, "qichatbot", TutorialLevel.BASIC))
+                tutorials.add(Tutorial(TutorialId.MYCHATBOT, R.string.mychatbot, "my_chatbot", TutorialLevel.BASIC))
                 tutorials.add(Tutorial(TutorialId.LISTEN, R.string.listen, "listen", TutorialLevel.BASIC))
             }
             TutorialLevel.ADVANCED -> {
