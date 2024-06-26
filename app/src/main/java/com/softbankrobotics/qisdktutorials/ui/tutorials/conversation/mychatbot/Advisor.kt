@@ -1,5 +1,6 @@
 package com.softbankrobotics.qisdktutorials.ui.tutorials.conversation.mychatbot
 
+import com.softbankrobotics.qisdktutorials.BuildConfig
 import android.util.Log
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
@@ -10,7 +11,7 @@ private const val TAG = "QiChatbotActivity"
 
 class Advisor {
     fun answerQuestion(messages: List<JSONMessage>): String {
-        val apiKey = "sk-proj-"
+        val apiKey = BuildConfig.ChatGPT_API_KEY
         val endpoint = "https://api.openai.com/v1/chat/completions"
         val client = OkHttpClient()
         val jsonMediaType = "application/json; charset=utf-8".toMediaTypeOrNull()

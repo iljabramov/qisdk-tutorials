@@ -130,3 +130,6 @@ gradle-app.setting
 # idea misc
 .idea/misc.xml
 
+# api keys
+apikeys.properties
+
