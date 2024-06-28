@@ -21,7 +21,7 @@ class PepperChatbot(context: QiContext?) : BaseChatbot(context) {
     private val gpt = Advisor()
 
     private val messages = mutableListOf(
-        JSONMessage("system", "You are a helpful assistant."),
+        JSONMessage("system", SYSTEM_PROMPT),
     ) // To store past messages
 
     override fun replyTo(phrase: Phrase, locale: Locale): StandardReplyReaction {
